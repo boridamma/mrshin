@@ -1,8 +1,0 @@
-public class rules {
-
-    public static void main (String[] args) {
-
-	var String greetings;
-
-    }
-}

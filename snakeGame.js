@@ -2,7 +2,7 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 const box = 20;
-let snake = [{ x: 3 * box, y: 3 * box }];
+let snake = [{ x: 10 * box, y: 10 * box }];
 let direction = "RIGHT";
 let food = {
     x: Math.floor(Math.random() * 20) * box,

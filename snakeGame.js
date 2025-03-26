@@ -1,10 +1,12 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const box = 20;
+const box = 20; // Snake body size remains 20x20
+const headSize = box * 4; // Enlarge snake head to 80x80
 let snake, direction, food, game;
+
 const snakeHeadImg = new Image();
-snakeHeadImg.src = "mrshin.png"; // Load the image for the snake head
+snakeHeadImg.src = "mrshin.png"; // Load snake head image
 
 startGame();
 
@@ -12,8 +14,8 @@ function startGame() {
     snake = [{ x: 10 * box, y: 10 * box }];
     direction = "RIGHT";
     food = {
-        x: Math.floor(Math.random() * 20) * box,
-        y: Math.floor(Math.random() * 20) * box
+        x: Math.floor(Math.random() * (canvas.width / box)) * box,
+        y: Math.floor(Math.random() * (canvas.height / box)) * box
     };
 
     if (game) clearInterval(game); // Stop any previous game loop
@@ -27,7 +29,6 @@ window.addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
     if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
 
-    // Restart the game when Enter is pressed
     if (event.key === "Enter") startGame();
 });
 
@@ -40,8 +41,8 @@ function draw() {
 
     for (let i = 0; i < snake.length; i++) {
         if (i === 0) {
-            // Draw snake head with image
-            ctx.drawImage(snakeHeadImg, snake[i].x, snake[i].y, box, box);
+            // Draw enlarged snake head (80x80) centered on the 20x20 grid
+            ctx.drawImage(snakeHeadImg, snake[i].x - (headSize - box) / 2, snake[i].y - (headSize - box) / 2, headSize, headSize);
         } else {
             ctx.fillStyle = "green";
             ctx.fillRect(snake[i].x, snake[i].y, box, box);
@@ -58,8 +59,8 @@ function draw() {
 
     if (newX === food.x && newY === food.y) {
         food = {
-            x: Math.floor(Math.random() * 20) * box,
-            y: Math.floor(Math.random() * 20) * box
+            x: Math.floor(Math.random() * (canvas.width / box)) * box,
+            y: Math.floor(Math.random() * (canvas.height / box)) * box
         };
     } else {
         snake.pop();

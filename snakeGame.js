@@ -58,4 +58,4 @@ function draw() {
     snake.unshift(newHead);
 }
 
-let game = setInterval(draw, 100);
+let game = setInterval(draw, 200);

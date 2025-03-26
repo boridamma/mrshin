@@ -68,7 +68,7 @@ function draw() {
     // Check collision with itself (considering larger head size)
     for (let i = 1; i < snake.length; i++) {
         if (Math.abs(newX - snake[i].x) < box && Math.abs(newY - snake[i].y) < box) {
-            alert("Game Over: You hit yourself!");
+            alert("와우,끝났네요! 다시 하려면 확인버튼을 누르세요");
             startGame();
             return;
         }

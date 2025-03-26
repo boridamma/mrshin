@@ -1,2 +1,2 @@
-# nand2tetris project
-This is a project that implements elements of computing system introduced in the book "The Elements of Computing Systems" written by Noam Nisan and Shimon Schocken.
+# 영어 단어 게임
+<strong>영어</strong> 단어에 관심 많은 학생들을 위한 사이트

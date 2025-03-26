@@ -60,18 +60,7 @@ function draw() {
     if (newX === food.x && newY === food.y) {
         food = {
             x: Math.floor(Math.random() * (canvas.width / box)) * box,
-            y: Math.floor(Math.random() * (canvas.height / box)) * box
-        };
-    } else {
-        snake.pop();
-    }
-
-    let newHead = { x: newX, y: newY };
-
-    if (newX < 0 || newX >= canvas.width || newY < 0 || newY >= canvas.height ||
-        snake.some(segment => segment.x === newX && segment.y === newY)) {
-        clearInterval(game);
-        alert("Game Over! Press Enter to restart.");
+            y: Math.floor(Math.random() * (canvas.height / box)) 요.");
         return;
     }
 

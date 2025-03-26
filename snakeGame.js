@@ -2,12 +2,21 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 const box = 20;
-let snake = [{ x: 10 * box, y: 10 * box }];
-let direction = "RIGHT";
-let food = {
-    x: Math.floor(Math.random() * 20) * box,
-    y: Math.floor(Math.random() * 20) * box
-};
+let snake, direction, food, game;
+startGame();
+
+function startGame(){
+    
+    snake = [{ x: 10 * box, y: 10 * box }];
+    direction = "RIGHT";
+    food = {
+        x: Math.floor(Math.random() * 20) * box,
+        y: Math.floor(Math.random() * 20) * box
+    };
+
+    if(game) clearInterval(game);    //stop any previous game loop
+    game = setInterval(draw, 200);
+}
 
 // Listen for key presses
 window.addEventListener("keydown", (event) => {
@@ -15,6 +24,9 @@ window.addEventListener("keydown", (event) => {
     if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
     if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
     if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+
+    //Restart the game when Enter is pressed
+    if(event.key === "Enter") startGame();
 });
 
 function draw() {
@@ -51,11 +63,9 @@ function draw() {
     if (newX < 0 || newX >= canvas.width || newY < 0 || newY >= canvas.height ||
         snake.some(segment => segment.x === newX && segment.y === newY)) {
         clearInterval(game);
-        alert("Game Over!");
+        alert("Game Over! Press Enter to restart.");
         return;
     }
     
     snake.unshift(newHead);
 }
-
-let game = setInterval(draw, 200);

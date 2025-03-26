@@ -5,8 +5,7 @@ const box = 20;
 let snake, direction, food, game;
 startGame();
 
-function startGame(){
-    
+function startGame() {
     snake = [{ x: 10 * box, y: 10 * box }];
     direction = "RIGHT";
     food = {
@@ -14,7 +13,7 @@ function startGame(){
         y: Math.floor(Math.random() * 20) * box
     };
 
-    if(game) clearInterval(game);    //stop any previous game loop
+    if (game) clearInterval(game); // Stop any previous game loop
     game = setInterval(draw, 200);
 }
 
@@ -24,9 +23,9 @@ window.addEventListener("keydown", (event) => {
     if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
     if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
     if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-
-    //Restart the game when Enter is pressed
-    if(event.key === "Enter") startGame();
+    
+    // Restart the game when Enter is pressed
+    if (event.key === "Enter") startGame();
 });
 
 function draw() {

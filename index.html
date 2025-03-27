@@ -1,53 +1,45 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아케이드 게임</title>
+    
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: black;
-        }
-        h1 {
-            color: white;
+            background-color: white;
             text-align: center;
         }
         canvas {
-            border: 2px solid white;
+            border: 2px solid black;
             display: block;
-            width: 90vw;
-            height: 80vh;
-            max-width: 700px;
-            max-height: 500px;
+            margin: auto;
+            background-color: black;
+        }
+        #message {
+            font-size: 20px;
+            color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>Mr.Shin 게임</h1>
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="gameCanvas" width="700" height="500"></canvas>
+    <div id="message">방향키를 눌러 이동하세요!</div>
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        
-        function resizeCanvas() {
-            canvas.width = Math.min(window.innerWidth * 0.9, 700);
-            canvas.height = Math.min(window.innerHeight * 0.8, 500);
-        }
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
+        const message = document.getElementById("message");
 
-        const box = canvas.width / 35; // Dynamic snake size
+        const box = 20;
         const headSize = box * 4;
-        let snake, direction, food, game;
+        let snake, direction, food, game, energy;
 
         const snakeHeadImg = new Image();
         snakeHeadImg.src = "mrshin.png";
+
+        startGame();
 
         function startGame() {
             snake = [{ x: 10 * box, y: 10 * box }];
@@ -56,11 +48,15 @@
                 x: Math.floor(Math.random() * (canvas.width / box)) * box,
                 y: Math.floor(Math.random() * (canvas.height / box)) * box
             };
+            energy = 3; // 벽 충돌 가능 횟수
+            message.innerText = "방향키를 눌러 이동하세요!";
+
             if (game) clearInterval(game);
             game = setInterval(draw, 200);
         }
-        
+
         window.addEventListener("keydown", (event) => {
+            message.innerText = "";
             if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
             if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
             if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
@@ -68,7 +64,9 @@
             if (event.key === "Enter") startGame();
         });
 
-        let touchStartX = 0, touchStartY = 0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
         canvas.addEventListener("touchstart", (event) => {
             let touch = event.touches[0];
             touchStartX = touch.clientX;
@@ -87,6 +85,7 @@
                 if (deltaY > 30 && direction !== "UP") direction = "DOWN";
                 if (deltaY < -30 && direction !== "DOWN") direction = "UP";
             }
+            message.innerText = "";
         });
 
         function draw() {
@@ -113,9 +112,14 @@
             if (direction === "LEFT") newX -= box;
             if (direction === "RIGHT") newX += box;
 
-            if (newX < -headSize / 2 || newX + headSize / 2 > canvas.width || newY < -headSize / 2 || newY + headSize / 2 > canvas.height) {
-                alert("와우! 끝났습니다. 다시 하려면 확인버튼을 누르세요.");
-                startGame();
+            if (newX < -headSize / 2 || newX + headSize / 2 > canvas.width || 
+                newY < -headSize / 2 || newY + headSize / 2 > canvas.height) {
+                energy--;
+                if (energy <= 0) {
+                    alert("Game Over: 에너지가 소진되었습니다! 다시 하려면 확인버튼을 누르세요.");
+                    startGame();
+                    return;
+                }
                 return;
             }
 
@@ -139,7 +143,6 @@
             let newHead = { x: newX, y: newY };
             snake.unshift(newHead);
         }
-        startGame();
     </script>
 </body>
 </html>

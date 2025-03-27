@@ -32,7 +32,7 @@ const HORIZON = HEIGHT / 2;
 // Penguin variables
 let penguinX = WIDTH / 2;
 let penguinY = HORIZON + 50;
-let penguinSpeed = 5;
+let penguinSpeed = 7; // Increased speed for more responsive movement
 let jumping = false;
 let jumpHeight = 100;
 let jumpProgress = 0;
@@ -96,9 +96,9 @@ function gameLoop() {
 
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft" && penguinX > 0) {
-        penguinX -= penguinSpeed;
+        penguinX -= penguinSpeed * 1.2; // Increased acceleration for left movement
     } else if (event.key === "ArrowRight" && penguinX < WIDTH) {
-        penguinX += penguinSpeed;
+        penguinX += penguinSpeed * 1.2; // Increased acceleration for right movement
     } else if (event.key === " " && !jumping) {
         jumping = true;
         jumpProgress = jumpHeight;

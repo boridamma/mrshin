@@ -24,91 +24,89 @@
         const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Set canvas size
-canvas.width = 800;
-canvas.height = 600;
+// Screen dimensions
+const WIDTH = 800;
+const HEIGHT = 600;
+const HORIZON = HEIGHT / 2;
 
-// Game variables
-let penguin = {
-    x: canvas.width / 2,
-    y: canvas.height - 100,
-    width: 50,
-    height: 50,
-    speed: 5,
-    jumping: false,
-    jumpHeight: 100,
-    jumpProgress: 0
-};
+// Penguin variables
+let penguinX = WIDTH / 2;
+let penguinY = HORIZON + 50;
+let penguinSpeed = 5;
+let jumping = false;
+let jumpHeight = 100;
+let jumpProgress = 0;
 
+// Road rotation variables
+let roadOffset = 0;
+let roadDirection = 1;
+
+// Obstacles
 let obstacles = [];
 for (let i = 0; i < 5; i++) {
-    obstacles.push({
-        x: Math.random() * (canvas.width - 100) + 50,
-        y: Math.random() * canvas.height / 2,
-        width: 60,
-        height: 20
-    });
+    obstacles.push({ x: Math.random() * WIDTH, y: HORIZON + Math.random() * 100 });
 }
 
-// Handle key events
-let keys = {};
-document.addEventListener("keydown", (event) => {
-    keys[event.key] = true;
-    if (event.key === " " && !penguin.jumping) {
-        penguin.jumping = true;
-        penguin.jumpProgress = penguin.jumpHeight;
+// Game loop
+function gameLoop() {
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    
+    // Draw sky
+    ctx.fillStyle = "skyblue";
+    ctx.fillRect(0, 0, WIDTH, HORIZON);
+    
+    // Draw road with rotation effect
+    ctx.fillStyle = "gray";
+    ctx.fillRect(roadOffset, HORIZON, WIDTH, HEIGHT / 2);
+    roadOffset += roadDirection;
+    if (roadOffset > 10 || roadOffset < -10) {
+        roadDirection *= -1;
     }
-});
-
-document.addEventListener("keyup", (event) => {
-    keys[event.key] = false;
-});
-
-function update() {
-    if (keys["ArrowLeft"] && penguin.x > 50) {
-        penguin.x -= penguin.speed;
-    }
-    if (keys["ArrowRight"] && penguin.x < canvas.width - 50) {
-        penguin.x += penguin.speed;
-    }
-
-    if (penguin.jumping) {
-        penguin.y -= 10;
-        penguin.jumpProgress -= 10;
-        if (penguin.jumpProgress <= 0) {
-            penguin.jumping = false;
+    
+    // Draw obstacles
+    ctx.fillStyle = "blue";
+    obstacles.forEach(obstacle => {
+        obstacle.y += 2;
+        if (obstacle.y > HEIGHT) {
+            obstacle.y = HORIZON + Math.random() * 100;
+            obstacle.x = Math.random() * WIDTH;
+        }
+        ctx.fillRect(obstacle.x, obstacle.y, 60, 20);
+    });
+    
+    // Handle jumping
+    if (jumping) {
+        penguinY -= 5;
+        jumpProgress -= 5;
+        if (jumpProgress <= 0) {
+            jumping = false;
         }
     } else {
-        penguin.y = canvas.height - 100;
+        penguinY = HORIZON + 50;
     }
-
-    for (let obstacle of obstacles) {
-        obstacle.y += 5;
-        if (obstacle.y > canvas.height) {
-            obstacle.x = Math.random() * (canvas.width - 100) + 50;
-            obstacle.y = -50;
-        }
-    }
-}
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "black";
-    ctx.fillRect(penguin.x, penguin.y, penguin.width, penguin.height);
     
-    ctx.fillStyle = "blue";
-    for (let obstacle of obstacles) {
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-    }
-}
-
-function gameLoop() {
-    update();
-    draw();
+    // Draw penguin
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.arc(penguinX, penguinY, 20, 0, Math.PI * 2);
+    ctx.fill();
+    
     requestAnimationFrame(gameLoop);
 }
 
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft" && penguinX > 0) {
+        penguinX -= penguinSpeed;
+    } else if (event.key === "ArrowRight" && penguinX < WIDTH) {
+        penguinX += penguinSpeed;
+    } else if (event.key === " " && !jumping) {
+        jumping = true;
+        jumpProgress = jumpHeight;
+    }
+});
+
 gameLoop();
+
 
     </script>
 </body>

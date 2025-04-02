@@ -78,7 +78,7 @@
                 if (i === 0) {
                     ctx.drawImage(snakeHeadImg, snake[i].x - (headSize - box) / 2, snake[i].y - (headSize - box) / 2, headSize, headSize);
                     if (bubbleMessage) {
-                        drawBubble(snake[i].x, snake[i].y - 30, bubbleMessage);
+                        drawBubble(snake[i].x, snake[i].y - 90, bubbleMessage);
                     }
                 } else {
                     ctx.fillStyle = "green";
@@ -130,13 +130,13 @@
         }
 
         function drawBubble(x, y, text) {
-            ctx.fillStyle = "white";
+            ctx.fillStyle = "yellow";
             ctx.beginPath();
-            ctx.arc(x + 10, y, 30, 0, Math.PI * 2);
+            ctx.arc(x + 10, y, 90, 0, Math.PI * 2);
             ctx.fill();
             ctx.fillStyle = "black";
-            ctx.font = "16px Arial";
-            ctx.fillText(text, x - 20, y + 5);
+            ctx.font = "24px Arial";
+            ctx.fillText(text, x - 60, y + 10);
         }
     </script>
 </body>

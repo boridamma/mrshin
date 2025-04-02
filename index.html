@@ -34,10 +34,12 @@
 
         const box = 20;
         const headSize = box * 4;
-        let snake, direction, food, game, energy;
+        let snake, direction, food, game, energy, bubbleMessage, bubbleTimer;
 
         const snakeHeadImg = new Image();
         snakeHeadImg.src = "mrshin.png";
+
+        const messages = ["Good job!", "Excellent!", "Great", "Good Question!", "Extremely Good Question!", "Hello, Everyone!", "Wow!"];
 
         startGame();
 
@@ -48,7 +50,8 @@
                 x: Math.floor(Math.random() * (canvas.width / box)) * box,
                 y: Math.floor(Math.random() * (canvas.height / box)) * box
             };
-            energy = 3; // 벽 충돌 가능 횟수
+            energy = 3; 
+            bubbleMessage = "";
             message.innerText = "방향키를 눌러 이동하세요!";
 
             if (game) clearInterval(game);
@@ -64,30 +67,6 @@
             if (event.key === "Enter") startGame();
         });
 
-        let touchStartX = 0;
-        let touchStartY = 0;
-
-        canvas.addEventListener("touchstart", (event) => {
-            let touch = event.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-        });
-
-        canvas.addEventListener("touchend", (event) => {
-            let touch = event.changedTouches[0];
-            let deltaX = touch.clientX - touchStartX;
-            let deltaY = touch.clientY - touchStartY;
-
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (deltaX > 30 && direction !== "LEFT") direction = "RIGHT";
-                if (deltaX < -30 && direction !== "RIGHT") direction = "LEFT";
-            } else {
-                if (deltaY > 30 && direction !== "UP") direction = "DOWN";
-                if (deltaY < -30 && direction !== "DOWN") direction = "UP";
-            }
-            message.innerText = "";
-        });
-
         function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -98,6 +77,9 @@
             for (let i = 0; i < snake.length; i++) {
                 if (i === 0) {
                     ctx.drawImage(snakeHeadImg, snake[i].x - (headSize - box) / 2, snake[i].y - (headSize - box) / 2, headSize, headSize);
+                    if (bubbleMessage) {
+                        drawBubble(snake[i].x, snake[i].y - 30, bubbleMessage);
+                    }
                 } else {
                     ctx.fillStyle = "green";
                     ctx.fillRect(snake[i].x, snake[i].y, box, box);
@@ -136,12 +118,25 @@
                     x: Math.floor(Math.random() * (canvas.width / box)) * box,
                     y: Math.floor(Math.random() * (canvas.height / box)) * box
                 };
+                bubbleMessage = messages[Math.floor(Math.random() * messages.length)];
+                clearTimeout(bubbleTimer);
+                bubbleTimer = setTimeout(() => bubbleMessage = "", 1000);
             } else {
                 snake.pop();
             }
 
             let newHead = { x: newX, y: newY };
             snake.unshift(newHead);
+        }
+
+        function drawBubble(x, y, text) {
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.arc(x + 10, y, 30, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "black";
+            ctx.font = "16px Arial";
+            ctx.fillText(text, x - 20, y + 5);
         }
     </script>
 </body>

@@ -50,7 +50,7 @@
                 x: Math.floor(Math.random() * (canvas.width / box)) * box,
                 y: Math.floor(Math.random() * (canvas.height / box)) * box
             };
-            energy = 8;
+            energy = 5;
             bubbleMessage = "";
             message.innerText = "방향키를 눌러 이동하세요!";
             headSize = box * 4;
@@ -125,7 +125,7 @@
     clearTimeout(bubbleTimer);
     bubbleTimer = setTimeout(() => bubbleMessage = "", 1000);
     
-    headSize *= 1.3; // 증가율을 30%로 조정
+    headSize *= 2; // 증가율을 30%로 조정
     foodCount++;
     
     if (foodCount % 3 === 0) {

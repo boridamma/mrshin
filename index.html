@@ -28,48 +28,50 @@
             justify-content: center;
             margin-top: 10px;
         }
-        .btn {
-            width: 60px;
-            height: 60px;
-            margin: 5px;
+        .controls button {
             font-size: 20px;
-            font-weight: bold;
+            padding: 10px;
+            margin: 5px;
+            background-color: lightgray;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <h1>Mr.Shin 게임</h1>
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="gameCanvas" width="700" height="500"></canvas>
     <div id="message">방향키를 눌러 이동하세요!</div>
     
     <div class="controls">
-        <button class="btn" id="left">⬅️</button>
-        <button class="btn" id="up">⬆️</button>
-        <button class="btn" id="down">⬇️</button>
-        <button class="btn" id="right">➡️</button>
+        <button onclick="changeDirection('LEFT')">◀</button>
+        <button onclick="changeDirection('UP')">▲</button>
+        <button onclick="changeDirection('DOWN')">▼</button>
+        <button onclick="changeDirection('RIGHT')">▶</button>
     </div>
-    
+
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const message = document.getElementById("message");
 
-        canvas.width = Math.min(window.innerWidth * 0.9, 700);
-        canvas.height = canvas.width * (5 / 7);
-        
-        const box = canvas.width / 35;
-        let headSize = box * 4;
-        let snake, direction, food, game, speed, foodCount;
+        const box = 20;
+        let headRadius = box * 2;
+        let snake, direction, food, game, energy, bubbleMessage, bubbleTimer, speed, foodCount;
 
         const snakeHeadImg = new Image();
         snakeHeadImg.src = "circular_mrshin.png";
 
+        const messages = ["Good job!", "Excellent!", "Great!", "Good Question!", "Extremely Good Question!", "Hello, Everyone!", "Wow!"];
+
         function startGame() {
             snake = [{ x: 10 * box, y: 10 * box }];
             direction = "RIGHT";
-            food = randomFoodPosition();
+            food = generateFood();
+            energy = 5;
+            bubbleMessage = "";
             message.innerText = "방향키를 눌러 이동하세요!";
-            headSize = box * 4;
+            headRadius = box * 2;
             speed = 200;
             foodCount = 0;
 
@@ -77,7 +79,7 @@
             game = setInterval(draw, speed);
         }
 
-        function randomFoodPosition() {
+        function generateFood() {
             return {
                 x: Math.floor(Math.random() * (canvas.width / box)) * box,
                 y: Math.floor(Math.random() * (canvas.height / box)) * box
@@ -85,18 +87,21 @@
         }
 
         window.addEventListener("keydown", (event) => {
-            message.innerText = "";
-            if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-            if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-            if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-            if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-            if (event.key === "Enter") startGame();
+            handleDirection(event.key);
         });
 
-        document.getElementById("up").addEventListener("click", () => { if (direction !== "DOWN") direction = "UP"; });
-        document.getElementById("down").addEventListener("click", () => { if (direction !== "UP") direction = "DOWN"; });
-        document.getElementById("left").addEventListener("click", () => { if (direction !== "RIGHT") direction = "LEFT"; });
-        document.getElementById("right").addEventListener("click", () => { if (direction !== "LEFT") direction = "RIGHT"; });
+        function handleDirection(key) {
+            message.innerText = "";
+            if (key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+            if (key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+            if (key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+            if (key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+            if (key === "Enter") startGame();
+        }
+
+        function changeDirection(newDirection) {
+            handleDirection(newDirection);
+        }
 
         function draw() {
             ctx.fillStyle = "black";
@@ -107,7 +112,10 @@
 
             for (let i = 0; i < snake.length; i++) {
                 if (i === 0) {
-                    ctx.drawImage(snakeHeadImg, snake[i].x - (headSize - box) / 2, snake[i].y - (headSize - box) / 2, headSize, headSize);
+                    ctx.drawImage(snakeHeadImg, snake[i].x - headRadius, snake[i].y - headRadius, headRadius * 2, headRadius * 2);
+                    if (bubbleMessage) {
+                        drawBubble(snake[i].x, snake[i].y - 180, bubbleMessage);
+                    }
                 } else {
                     ctx.fillStyle = "green";
                     ctx.fillRect(snake[i].x, snake[i].y, box, box);
@@ -122,24 +130,25 @@
             if (direction === "LEFT") newX -= box;
             if (direction === "RIGHT") newX += box;
 
-            if (newX < 0 || newX >= canvas.width || newY < 0 || newY >= canvas.height) {
-                alert("Game Over! 다시 시작하려면 확인을 누르세요.");
-                startGame();
-                return;
-            }
-
-            for (let i = 1; i < snake.length; i++) {
-                if (newX === snake[i].x && newY === snake[i].y) {
-                    alert("게임 종료! 다시 하려면 확인 버튼을 누르세요.");
+            if (newX - headRadius < 0 || newX + headRadius > canvas.width || newY - headRadius < 0 || newY + headRadius > canvas.height) {
+                energy--;
+                if (energy <= 0) {
+                    alert("Game Over: 에너지가 소진되었습니다! 다시 하려면 확인버튼을 누르세요.");
                     startGame();
                     return;
                 }
+                return;
             }
 
-            if (newX === food.x && newY === food.y) {
-                food = randomFoodPosition();
-                headSize *= 1.3;
+            let distance = Math.sqrt((newX - food.x) ** 2 + (newY - food.y) ** 2);
+            if (distance < headRadius + box / 2) {
+                food = generateFood();
+                bubbleMessage = messages[Math.floor(Math.random() * messages.length)];
+                clearTimeout(bubbleTimer);
+                bubbleTimer = setTimeout(() => bubbleMessage = "", 1000);
+                headRadius *= 1.3;
                 foodCount++;
+                
                 if (foodCount % 3 === 0) {
                     speed *= 0.8;
                     clearInterval(game);
@@ -149,7 +158,18 @@
                 snake.pop();
             }
 
-            snake.unshift({ x: newX, y: newY });
+            let newHead = { x: newX, y: newY };
+            snake.unshift(newHead);
+        }
+
+        function drawBubble(x, y, text) {
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.arc(x + 10, y, 50, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "black";
+            ctx.font = "20px Arial";
+            ctx.fillText(text, x - 30, y + 10);
         }
 
         startGame();

@@ -33,11 +33,11 @@
         const message = document.getElementById("message");
 
         const box = 20;
-        const headSize = box * 4;
-        let snake, direction, food, game, energy, bubbleMessage, bubbleTimer;
+        let headSize = box * 4;
+        let snake, direction, food, game, energy, bubbleMessage, bubbleTimer, speed, foodCount;
 
         const snakeHeadImg = new Image();
-        snakeHeadImg.src = "circular_mrshin.png";
+        snakeHeadImg.src = "mrshin.png";
 
         const messages = ["Good job!", "Excellent!", "Great", "Good Question!", "Extremely Good Question!", "Hello, Everyone!", "Wow!"];
 
@@ -50,12 +50,15 @@
                 x: Math.floor(Math.random() * (canvas.width / box)) * box,
                 y: Math.floor(Math.random() * (canvas.height / box)) * box
             };
-            energy = 3; 
+            energy = 3;
             bubbleMessage = "";
             message.innerText = "방향키를 눌러 이동하세요!";
+            headSize = box * 4;
+            speed = 200;
+            foodCount = 0;
 
             if (game) clearInterval(game);
-            game = setInterval(draw, 200);
+            game = setInterval(draw, speed);
         }
 
         window.addEventListener("keydown", (event) => {
@@ -121,6 +124,15 @@
                 bubbleMessage = messages[Math.floor(Math.random() * messages.length)];
                 clearTimeout(bubbleTimer);
                 bubbleTimer = setTimeout(() => bubbleMessage = "", 1000);
+                
+                headSize *= 2; 
+                foodCount++;
+                
+                if (foodCount % 3 === 0) {
+                    speed *= 0.8;
+                    clearInterval(game);
+                    game = setInterval(draw, speed);
+                }
             } else {
                 snake.pop();
             }

@@ -165,14 +165,24 @@
         }
 
         function drawBubble(x, y, text) {
-            ctx.fillStyle = "yellow";
-            ctx.beginPath();
-            ctx.arc(x + 10, y, 50, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = "black";
-            ctx.font = "40px Arial";
-            ctx.fillText(text, x - 10, y);
-        }
+    ctx.fillStyle = "yellow";
+    
+    // Make the speech bubble twice as big
+    let bubbleWidth = 300;  
+    let bubbleHeight = 150;
+    let textSize = 48; // 20% bigger than before
+
+    ctx.beginPath();
+    ctx.ellipse(x, y, bubbleWidth / 2, bubbleHeight / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "black";
+    ctx.font = `${textSize}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText(text, x, y);
+}
 
         startGame();
     </script>

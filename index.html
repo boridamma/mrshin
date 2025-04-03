@@ -145,7 +145,7 @@
                 food = generateFood();
                 bubbleMessage = messages[Math.floor(Math.random() * messages.length)];
                 clearTimeout(bubbleTimer);
-                bubbleTimer = setTimeout(() => bubbleMessage = "", 2000);
+                bubbleTimer = setTimeout(() => bubbleMessage = "", 3000);
                 headRadius *= 1.3;
                 foodCount++;
                 
@@ -169,7 +169,7 @@
             ctx.fill();
             ctx.fillStyle = "black";
             ctx.font = "10px Arial";
-            ctx.fillText(text, x - 60, y + 10);
+            ctx.fillText(text, x - 100, y);
         }
 
         startGame();

@@ -1,1 +1,190 @@
-<p>snake game</p>
+<!DOCTYPE html> 
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아케이드 게임</title>
+    
+    <style>
+        body {
+            background-color: white;
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid black;
+            display: block;
+            margin: auto;
+            background-color: black;
+            max-width: 100%;
+            height: auto;
+        }
+        #message {
+            font-size: 20px;
+            color: red;
+            margin-top: 10px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .controls button {
+            font-size: 20px;
+            padding: 10px;
+            margin: 5px;
+            background-color: lightgray;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mr.Shin 게임</h1>
+    <canvas id="gameCanvas" width="700" height="500"></canvas>
+    <div id="message">방향키를 눌러 이동하세요!</div>
+    
+    <div class="controls">
+        <button onclick="changeDirection('LEFT')">◀</button>
+        <button onclick="changeDirection('UP')">▲</button>
+        <button onclick="changeDirection('DOWN')">▼</button>
+        <button onclick="changeDirection('RIGHT')">▶</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const message = document.getElementById("message");
+
+        const box = 20;
+        let headRadius = box * 2;
+        let snake, direction, food, game, energy, bubbleMessage, bubbleTimer, speed, foodCount;
+
+        const snakeHeadImg = new Image();
+        snakeHeadImg.src = "circular_mrshin.png";
+        
+        const foodImg = new Image();
+        foodImg.src = "strawberry.png";
+
+        const messages = ["Good job!", "Excellent!", "Great!", "Good Question!", "Extremely Good Question!", "Hello, Everyone!", "Wow!"];
+
+        function startGame() {
+            snake = [{ x: 10 * box, y: 10 * box }];
+            direction = "RIGHT";
+            food = generateFood();
+            energy = 5;
+            bubbleMessage = "";
+            message.innerText = "방향키를 눌러 이동하세요!";
+            headRadius = box * 2;
+            speed = 200;
+            foodCount = 0;
+
+            if (game) clearInterval(game);
+            game = setInterval(draw, speed);
+        }
+
+        function generateFood() {
+            return {
+                x: Math.floor(Math.random() * (canvas.width / box)) * box,
+                y: Math.floor(Math.random() * (canvas.height / box)) * box
+            };
+        }
+
+        window.addEventListener("keydown", (event) => {
+            handleDirection(event.key);
+        });
+
+        function handleDirection(key) {
+            message.innerText = "";
+            if (key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+            if (key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+            if (key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+            if (key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+            if (key === "Enter") startGame();
+        }
+
+        function changeDirection(newDirection) {
+            handleDirection(newDirection);
+        }
+
+        function draw() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.drawImage(foodImg, food.x, food.y, box, box);
+
+            for (let i = 0; i < snake.length; i++) {
+                if (i === 0) {
+                    ctx.drawImage(snakeHeadImg, snake[i].x - headRadius, snake[i].y - headRadius, headRadius * 2, headRadius * 2);
+                    if (bubbleMessage) {
+                        drawBubble(snake[i].x, snake[i].y - 180, bubbleMessage);
+                    }
+                } else {
+                    ctx.fillStyle = "green";
+                    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+                }
+            }
+
+            let newX = snake[0].x;
+            let newY = snake[0].y;
+
+            if (direction === "UP") newY -= box;
+            if (direction === "DOWN") newY += box;
+            if (direction === "LEFT") newX -= box;
+            if (direction === "RIGHT") newX += box;
+
+            if (newX - headRadius < 0 || newX + headRadius > canvas.width || newY - headRadius < 0 || newY + headRadius > canvas.height) {
+                energy--;
+                if (energy <= 0) {
+                    alert("Game Over: 에너지가 소진되었습니다! 다시 하려면 확인버튼을 누르세요.");
+                    startGame();
+                    return;
+                }
+                return;
+            }
+
+            let distance = Math.sqrt((newX - food.x) ** 2 + (newY - food.y) ** 2);
+            if (distance < headRadius + box / 2) {
+                food = generateFood();
+                bubbleMessage = messages[Math.floor(Math.random() * messages.length)];
+                clearTimeout(bubbleTimer);
+                bubbleTimer = setTimeout(() => bubbleMessage = "", 3000);
+                headRadius *= 1.3;
+                foodCount++;
+                
+                if (foodCount % 3 === 0) {
+                    speed *= 0.8;
+                    clearInterval(game);
+                    game = setInterval(draw, speed);
+                }
+            } else {
+                snake.pop();
+            }
+
+            let newHead = { x: newX, y: newY };
+            snake.unshift(newHead);
+        }
+
+        function drawBubble(x, y, text) {
+                ctx.fillStyle = "yellow";
+    
+                // Make the speech bubble twice as big
+                let bubbleWidth = 1000;  
+                let bubbleHeight = 150;
+                let textSize = 20; // 20% bigger than before
+
+                ctx.beginPath();
+                ctx.ellipse(x, y, bubbleWidth / 2, bubbleHeight / 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "black";
+                ctx.font = `${textSize}px Arial`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                ctx.fillText(text, x, y);
+        }
+
+        startGame();
+    </script>
+</body>
+</html>

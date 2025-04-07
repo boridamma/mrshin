@@ -42,6 +42,7 @@
     <h2>팡팡 게임 </h2>
 <canvas id="invaderCanvas" width="600" height="400"></canvas>
 <div id="invaderMessage">왼쪽 오른쪽 화살표 키로 움직이고, 스페이스바로 미사일을 발사하세요!</div>
+<button id="restartBtn" style="display:none; font-size: 20px; padding: 10px;">다시 시작</button>
 
 <script>
     const canvas2 = document.getElementById("invaderCanvas");
@@ -56,6 +57,10 @@
     let enemyDirection = 1;
     let score = 0;
 
+    const restartBtn = document.getElementById("restartBtn");
+    restartBtn.addEventListener("click", () => {
+        location.reload(); // Reloads the page to restart the game
+    });
     function createEnemies() {
         enemies = [];
         for (let i = 0; i < 5; i++) {
@@ -123,6 +128,7 @@
                 ctx2.font = "20px Arial";
                 ctx2.fillText("Game Over!", 90, canvas2.height / 2);
                 clearInterval(invaderLoop);
+                restartBtn.style.display = "inline-block";
             }
         }
 
@@ -132,6 +138,7 @@
             ctx2.font = "20px Arial";
             ctx2.fillText("You Win!", 100, canvas2.height / 2);
             clearInterval(invaderLoop);
+            restartBtn.style.display = "inline-block";
         }
     }
 

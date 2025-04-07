@@ -47,6 +47,9 @@
     const canvas2 = document.getElementById("invaderCanvas");
     const ctx2 = canvas2.getContext("2d");
 
+    const playerImg = new Image();
+    playerImg.src = "mrshin.png";
+
     let player = { x: 130, y: 150, width: 20, height: 20 };
     let bullets = [];
     let enemies = [];
@@ -65,9 +68,8 @@
     function drawInvaderGame() {
         ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
 
-        // Draw player
-        ctx2.fillStyle = "lime";
-        ctx2.fillRect(player.x, player.y, player.width, player.height);
+        // Draw player image
+        ctx2.drawImage(playerImg, player.x, player.y, player.width, player.height);
 
         // Draw bullets
         ctx2.fillStyle = "yellow";

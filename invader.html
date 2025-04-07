@@ -1,0 +1,148 @@
+<!DOCTYPE html> 
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아케이드 게임</title>
+    
+    <style>
+        body {
+            background-color: white;
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid black;
+            display: block;
+            margin: auto;
+            background-color: black;
+            max-width: 100%;
+            height: auto;
+        }
+        #message {
+            font-size: 20px;
+            color: red;
+            margin-top: 10px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .controls button {
+            font-size: 20px;
+            padding: 10px;
+            margin: 5px;
+            background-color: lightgray;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>팡팡 게임 </h2>
+<canvas id="invaderCanvas" width="284" height="177"></canvas>
+<div id="invaderMessage">왼쪽 오른쪽 화살표 키로 움직이고, 스페이스바로 미사일을 발사하세요!</div>
+
+<script>
+    const canvas2 = document.getElementById("invaderCanvas");
+    const ctx2 = canvas2.getContext("2d");
+
+    let player = { x: 130, y: 150, width: 20, height: 20 };
+    let bullets = [];
+    let enemies = [];
+    let enemyDirection = 1;
+    let score = 0;
+
+    function createEnemies() {
+        enemies = [];
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 3; j++) {
+                enemies.push({ x: 30 + i * 40, y: 30 + j * 30, width: 20, height: 20 });
+            }
+        }
+    }
+
+    function drawInvaderGame() {
+        ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+
+        // Draw player
+        ctx2.fillStyle = "lime";
+        ctx2.fillRect(player.x, player.y, player.width, player.height);
+
+        // Draw bullets
+        ctx2.fillStyle = "yellow";
+        bullets.forEach(bullet => {
+            bullet.y -= 4;
+            ctx2.fillRect(bullet.x, bullet.y, 4, 10);
+        });
+
+        // Draw enemies
+        ctx2.fillStyle = "red";
+        enemies.forEach(enemy => {
+            ctx2.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        });
+
+        // Move enemies
+        let shouldReverse = false;
+        enemies.forEach(enemy => {
+            enemy.x += enemyDirection * 1;
+            if (enemy.x <= 0 || enemy.x + enemy.width >= canvas2.width) {
+                shouldReverse = true;
+            }
+        });
+
+        if (shouldReverse) {
+            enemyDirection *= -1;
+            enemies.forEach(enemy => enemy.y += 10);
+        }
+
+        // Bullet collision
+        bullets = bullets.filter(bullet => {
+            for (let i = 0; i < enemies.length; i++) {
+                const e = enemies[i];
+                if (
+                    bullet.x < e.x + e.width &&
+                    bullet.x + 4 > e.x &&
+                    bullet.y < e.y + e.height &&
+                    bullet.y + 10 > e.y
+                ) {
+                    enemies.splice(i, 1);
+                    score++;
+                    return false;
+                }
+            }
+            return bullet.y > 0;
+        });
+
+        // Game over check
+        for (let enemy of enemies) {
+            if (enemy.y + enemy.height >= player.y) {
+                ctx2.fillStyle = "white";
+                ctx2.font = "20px Arial";
+                ctx2.fillText("Game Over!", 90, canvas2.height / 2);
+                clearInterval(invaderLoop);
+            }
+        }
+
+        // Victory check
+        if (enemies.length === 0) {
+            ctx2.fillStyle = "white";
+            ctx2.font = "20px Arial";
+            ctx2.fillText("You Win!", 100, canvas2.height / 2);
+            clearInterval(invaderLoop);
+        }
+    }
+
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft" && player.x > 0) player.x -= 10;
+        if (e.key === "ArrowRight" && player.x + player.width < canvas2.width) player.x += 10;
+        if (e.key === " " || e.code === "Space") {
+            bullets.push({ x: player.x + player.width / 2 - 2, y: player.y });
+        }
+    });
+
+    createEnemies();
+    const invaderLoop = setInterval(drawInvaderGame, 30);
+</script>
+</body>
+</html>

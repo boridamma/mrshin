@@ -128,6 +128,21 @@
       bullets.forEach((b) => b.y -= 5);
       bullets.filter((b) => b.y > 0);
 
+      //Player bullets destroy enemy bullets
+      bullets = bullets.filter(bullet => {
+            let hit = false;
+            enemyBullets = enemyBullets.filter(eBullet => {
+                const dx = bullet.x - eBullet.x;
+                const dy = bullet.y - eBullet.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < eBullet.radius + bullet.width) {
+                          hit = true;
+                          return false; // remove enemy bullet
+                    }
+                    return true;
+            });
+            return !hit && bullet.y > 0;
+      });
       // Spawn enemies
       if (enemies.length === 0) {
         spawnEnemy();

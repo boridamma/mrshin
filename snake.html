@@ -95,10 +95,10 @@
 
         function handleDirection(key) {
             message.innerText = "";
-            if (key === "ArrowUp" || key === "UP" ) && direction !== "DOWN") direction = "UP";
-            if (key === "ArrowDown" || key === "DOWN") && direction !== "UP") direction = "DOWN";
-            if (key === "ArrowLeft" || key === "LEFT") && direction !== "RIGHT") direction = "LEFT";
-            if (key === "ArrowRight" || key === "RIGHT") && direction !== "LEFT") direction = "RIGHT";
+            if ((key === "ArrowUp" || key === "UP" ) && direction !== "DOWN") direction = "UP";
+            if ((key === "ArrowDown" || key === "DOWN") && direction !== "UP") direction = "DOWN";
+            if ((key === "ArrowLeft" || key === "LEFT") && direction !== "RIGHT") direction = "LEFT";
+            if ((key === "ArrowRight" || key === "RIGHT") && direction !== "LEFT") direction = "RIGHT";
             if (key === "Enter") startGame();
         }
 

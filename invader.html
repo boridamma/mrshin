@@ -126,7 +126,6 @@
 
       // Move player bullets
       bullets.forEach((b) => b.y -= 5);
-      bullets.filter((b) => b.y > 0);
 
       //Player bullets destroy enemy bullets
       bullets = bullets.filter(bullet => {
@@ -221,7 +220,7 @@
       // Enemies
       enemies.forEach(enemy => {
           enemy.y += 2;
-          ctx2.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
+          ctx.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
       });
       // Enemy bullets
       ctx.fillStyle = "white";

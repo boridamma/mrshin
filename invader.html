@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>탄막 피하기 팡팡 게임</title>
+  <title>팡팡 게임</title>
   <style>
     body {
       background-color: white;
@@ -24,7 +24,7 @@
   </style>
 </head>
 <body>
-  <h2>탄막 피하기 팡팡 게임</h2>
+  <h2>팡팡 게임</h2>
   <canvas id="gameCanvas" width="600" height="400"></canvas>
   <div>←↑↓→로 이동, 스페이스바로 공격</div>
   <button id="restartBtn">다시 시작</button>
@@ -47,7 +47,7 @@
     const bullets = [];
     const enemies = [];
     let enemyBullets = [];
-
+    let shootCooldown = 0;
     let keys = {};
     let score = 0;
     let gameOver = false;
@@ -112,8 +112,14 @@
       if (keys["ArrowDown"] && player.y + player.height < canvas.height) player.y += player.speed;
 
       // Player shooting
-      if ((keys[" "] || keys["Spacebar"]) && bullets.length < 5) {
-        bullets.push({ x: player.x + player.width / 2 - 2, y: player.y, width: 4, height: 10 });
+      if ((keys[" "] || keys["Spacebar"])) {
+          if (shootCooldown <= 0) {
+            bullets.push({ x: player.x + player.width / 2 - 2, y: player.y, width: 4, height: 10 });
+            shootCooldown = 10; // frames between shots
+          }
+      }
+      if (shootCooldown > 0) {
+        shootCooldown--;
       }
 
       // Move player bullets

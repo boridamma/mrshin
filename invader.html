@@ -44,6 +44,8 @@
       speed: 5
     };
 
+    const enemyImg = new Image();
+    enemyImg.src = "enemy.png";  //enemy image
     const bullets = [];
     const enemies = [];
     let enemyBullets = [];
@@ -202,9 +204,10 @@
       bullets.forEach((b) => ctx.fillRect(b.x, b.y, b.width, b.height));
 
       // Enemies
-      ctx.fillStyle = "red";
-      enemies.forEach((e) => ctx.fillRect(e.x, e.y, e.width, e.height));
-
+      enemies.forEach(enemy => {
+          enemy.y += 2;
+          ctx2.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
+      });
       // Enemy bullets
       ctx.fillStyle = "white";
       enemyBullets.forEach((b) => {

@@ -183,6 +183,37 @@
 
                 ctx.fillText(text, x, y);
         }
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        canvas.addEventListener("touchstart", function (e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, false);
+
+        canvas.addEventListener("touchmove", function (e) {
+            if (!touchStartX || !touchStartY) return;
+
+            let touchEndX = e.touches[0].clientX;
+            let touchEndY = e.touches[0].clientY;
+
+            let diffX = touchEndX - touchStartX;
+            let diffY = touchEndY - touchStartY;
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                // Horizontal swipe
+                if (diffX > 30 && direction !== "LEFT") direction = "RIGHT";
+                else if (diffX < -30 && direction !== "RIGHT") direction = "LEFT";
+            } else {
+                // Vertical swipe
+                if (diffY > 30 && direction !== "UP") direction = "DOWN";
+                else if (diffY < -30 && direction !== "DOWN") direction = "UP";
+            }
+
+            // Reset after detection
+                touchStartX = 0;
+                touchStartY = 0;
+            }, false);
 
         startGame();
     </script>

@@ -54,34 +54,29 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const message = document.getElementById("message");
-
+        const messages = ["Good job!", "Excellent!", "Great!", "Good Question!", "Extremely Good Question!", "Hello, Everyone!", "Wow!"];
+        const snakeHeadImg = new Image();
+        const foodImg = new Image();
         const box = 20;
+        let touchStartX = 0;
+        let touchStartY = 0;
         let headRadius = box * 2;
         let snake, direction, food, game, energy, bubbleMessage, bubbleTimer, speed, foodCount;
-
-        const snakeHeadImg = new Image();
+        let imagesLoaded = 0;
+                
         snakeHeadImg.src = "circular_mrshin.png";
-        
-        const foodImg = new Image();
         foodImg.src = "strawberry.png";
 
-        const messages = ["Good job!", "Excellent!", "Great!", "Good Question!", "Extremely Good Question!", "Hello, Everyone!", "Wow!"];
+        snakeHeadImg.onload = checkImagesLoaded
+        foodImg.onload = checkImagesLoaded
 
-        function startGame() {
-            snake = [{ x: 10 * box, y: 10 * box }];
-            direction = "RIGHT";
-            food = generateFood();
-            energy = 5;
-            bubbleMessage = "";
-            message.innerText = "방향키를 눌러 이동하세요!";
-            headRadius = box * 2;
-            speed = 200;
-            foodCount = 0;
-
-            if (game) clearInterval(game);
-            game = setInterval(draw, speed);
+        function checkImagesLoaded(){
+                imagesLoaded++;
+                if (imagesLoaded === 2){
+                    startGame()
+                }
         }
-
+        
         function generateFood() {
             return {
                 x: Math.floor(Math.random() * (canvas.width / box)) * box,
@@ -148,7 +143,7 @@
                 bubbleMessage = messages[Math.floor(Math.random() * messages.length)];
                 clearTimeout(bubbleTimer);
                 bubbleTimer = setTimeout(() => bubbleMessage = "", 3000);
-                headRadius *= 1.3;
+                headRadius *= 1.2;
                 foodCount++;
                 
                 if (foodCount % 3 === 0) {
@@ -183,8 +178,7 @@
 
                 ctx.fillText(text, x, y);
         }
-        let touchStartX = 0;
-        let touchStartY = 0;
+        
 
         canvas.addEventListener("touchstart", function (e) {
             touchStartX = e.touches[0].clientX;
@@ -214,7 +208,22 @@
                 touchStartX = 0;
                 touchStartY = 0;
             }, false);
+        
+        function startGame() {
+            snake = [{ x: 10 * box, y: 10 * box }];
+            direction = "RIGHT";
+            food = generateFood();
+            energy = 5;
+            bubbleMessage = "";
+            message.innerText = "방향키를 눌러 이동하세요!";
+            headRadius = box * 2;
+            speed = 200;
+            foodCount = 0;
 
+            if (game) clearInterval(game);
+            game = setInterval(draw, speed);
+        }
+        
         startGame();
     </script>
     <a href="index.html">홈으로</a>

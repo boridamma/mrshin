@@ -53,7 +53,17 @@
     let keys = {};
     let score = 0;
     let gameOver = false;
+    // 이미지 로드 확인
+    let imagesLoaded = 0;
+    function checkAllImagesLoaded() {
+        imagesLoaded++;
+        if (imagesLoaded === 2) {
+            gameLoop(); // 이미지 두 개 다 로드된 후에만 시작
+        }
+    }
 
+    playerImg.onload = checkAllImagesLoaded;
+    enemyImg.onload = checkAllImagesLoaded;
     const restartBtn = document.getElementById("restartBtn");
     restartBtn.addEventListener("click", () => location.reload());
 

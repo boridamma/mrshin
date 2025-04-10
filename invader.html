@@ -47,7 +47,7 @@
     const bullets = [];
     const enemies = [];
     let enemyBullets = [];
-
+    let shootCooldown = 0;
     let keys = {};
     let score = 0;
     let gameOver = false;
@@ -112,10 +112,15 @@
       if (keys["ArrowDown"] && player.y + player.height < canvas.height) player.y += player.speed;
 
       // Player shooting
-      if ((keys[" "] || keys["Spacebar"]) && bullets.length < 5) {
-        bullets.push({ x: player.x + player.width / 2 - 2, y: player.y, width: 4, height: 10 });
+      if ((keys[" "] || keys["Spacebar"])) {
+            if (shootCooldown <= 0) {
+                bullets.push({ x: player.x + player.width / 2 - 2, y: player.y, width: 4, height: 10 });
+                shootCooldown = 10; // frames between shots
+            }
       }
-
+      if (shootCooldown > 0) {
+          shootCooldown--;
+      }
       // Move player bullets
       bullets.forEach((b) => b.y -= 5);
       bullets.filter((b) => b.y > 0);

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas Racing Game</title>
+  <style>
+    canvas {
+      background: #ccc;
+      display: block;
+      margin: 0 auto;
+      border: 2px solid black;
+    }
+    #hud {
+      text-align: center;
+      font-family: sans-serif;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="600" height="800"></canvas>
+<div id="hud">
+  <p id="lap">Lap: 1 / 3</p>
+  <p id="timer">Time: 0'00.00</p>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const car = {
+  x: 280,
+  y: 700,
+  width: 40,
+  height: 60,
+  speed: 4
+};
+
+let keys = {};
+let lap = 1;
+const maxLaps = 3;
+
+let startTime = Date.now();
+let lastLineY = 0;
+let trackScroll = 0;
+
+const road = {
+  left: 150,
+  right: 450,
+  lineSpacing: 40
+};
+
+document.addEventListener('keydown', (e) => keys[e.key] = true);
+document.addEventListener('keyup', (e) => keys[e.key] = false);
+
+function formatTime(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const hundredths = Math.floor((ms % 1000) / 10);
+  return `${minutes}'${String(seconds).padStart(2, '0')}.${String(hundredths).padStart(2, '0')}`;
+}
+
+function updateHUD() {
+  const elapsed = Date.now() - startTime;
+  document.getElementById('timer').textContent = `Time: ${formatTime(elapsed)}`;
+  document.getElementById('lap').textContent = `Lap: ${lap} / ${maxLaps}`;
+}
+
+function drawRoad() {
+  ctx.fillStyle = 'gray';
+  ctx.fillRect(road.left, 0, road.right - road.left, canvas.height);
+
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 2;
+  for (let y = lastLineY; y < canvas.height; y += road.lineSpacing) {
+    ctx.beginPath();
+    ctx.moveTo((road.left + road.right) / 2 - 5, y + trackScroll);
+    ctx.lineTo((road.left + road.right) / 2 + 5, y + trackScroll);
+    ctx.stroke();
+  }
+}
+
+function drawCar() {
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(car.x, car.y, car.width, car.height);
+}
+
+function checkCollision() {
+  if (car.x < road.left || car.x + car.width > road.right) {
+    alert("Crashed! Game Over.");
+    document.location.reload();
+  }
+}
+
+function nextLap() {
+  if (lap < maxLaps) {
+    lap++;
+    startTime = Date.now();
+  } else {
+    alert('Race finished!');
+    document.location.reload();
+  }
+}
+
+function updateGame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Move car
+  if (keys['ArrowLeft']) car.x -= car.speed;
+  if (keys['ArrowRight']) car.x += car.speed;
+
+  // Simulate road moving
+  trackScroll += 5;
+  if (trackScroll >= road.lineSpacing) {
+    trackScroll = 0;
+    lastLineY = (lastLineY + road.lineSpacing) % road.lineSpacing;
+  }
+
+  drawRoad();
+  drawCar();
+  checkCollision();
+  updateHUD();
+
+  // Lap logic (simple: car touches top of canvas)
+  if (car.y <= 50) {
+    car.y = 700;
+    nextLap();
+  }
+
+  requestAnimationFrame(updateGame);
+}
+
+updateGame();
+</script>
+
+</body>
+</html>

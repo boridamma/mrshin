@@ -32,10 +32,22 @@
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-
     const playerImg = new Image();
+    const enemyImg = new Image();
+    const bullets = [];
+    const enemies = [];
+    const restartBtn = document.getElementById("restartBtn");
+    let enemyBullets = [];
+    let shootCooldown = 0;
+    let keys = {};
+    let score = 0;
+    let gameOver = false;
+    let imagesLoaded = 0;
     playerImg.src = "mrshin.png"; // ⭐ Player image
-
+    enemyImg.src = "enemy.png";  //enemy image
+    playerImg.onload = checkImagesLoaded;
+    enemyImg.onload = checkImagesLoaded;
+    
     const player = {
       x: canvas.width / 2 - 15,
       y: canvas.height - 50,
@@ -43,41 +55,27 @@
       height: 30,
       speed: 5
     };
-
-    const enemyImg = new Image();
-    enemyImg.src = "enemy.png";  //enemy image
-    const bullets = [];
-    const enemies = [];
-    let enemyBullets = [];
-    let shootCooldown = 0;
-    let keys = {};
-    let score = 0;
-    let gameOver = false;
+        
     // 이미지 로드 확인
-    let imagesLoaded = 0;
-    function checkAllImagesLoaded() {
+    function checkImagesLoaded() {
         imagesLoaded++;
         if (imagesLoaded === 2) {
             gameLoop(); // 이미지 두 개 다 로드된 후에만 시작
         }
     }
-
-    playerImg.onload = checkAllImagesLoaded;
-    enemyImg.onload = checkAllImagesLoaded;
-    const restartBtn = document.getElementById("restartBtn");
+        
     restartBtn.addEventListener("click", () => location.reload());
-
     window.addEventListener("keydown", (e) => { keys[e.key] = true; });
     window.addEventListener("keyup", (e) => { keys[e.key] = false; });
 
     function spawnEnemy() {
-      const enemy = {
-        x: Math.random() * (canvas.width - 20),
-        y: -20,
-        width: 20,
-        height: 20,
-        speed: 2
-      };
+        const enemy = {
+            x: Math.random() * (canvas.width - 20),
+            y: -20,
+            width: 20,
+            height: 20,
+            speed: 2
+        };
       enemies.push(enemy);
     }
 
@@ -260,5 +258,6 @@
 
     gameLoop();
   </script>
+  <a href="index.html">홈으로</a>
 </body>
 </html>

@@ -14,9 +14,11 @@
 
   <style>
     .game-container {
+      background-color: orange;
       transition: background-color 0.3s ease;
       border-radius: 10px;
       padding: 20px;
+      color: white;
     }
 
     .game-container:hover {
@@ -31,6 +33,10 @@
     .invader-container:hover {
       background-color: pink;
       color: black;
+    }
+
+    .racing-container:hover {
+      background-color: green; /* Optional: stays orange, or you can change it */
     }
   </style>
 
@@ -67,7 +73,7 @@
 
       <!-- Racing Game -->
       <div class="col-sm-4 text-center">
-        <div class="game-container">
+        <div class="game-container racing-container">
           <a href="#" class="text-decoration-none text-reset">
             <h3><i class="fas fa-car"></i> 레이싱 게임</h3>
             <p>준비 중...</p>

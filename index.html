@@ -44,10 +44,16 @@
 </head>
 <body>
   <div class="container-fluid p-5 bg-primary text-white text-center">
+    <div class="d-flex justify-content-between align-items-center">
     <h1><i class="fas fa-globe"></i> Mr. Shin 월드</h1>
     <p>배움과 즐거움이 있는 곳!</p> 
   </div>
-
+  <div class="text-end">
+      <p class="mb-0">👀 Today: <span id="todayCount">--</span></p>
+      <p class="mb-0">📊 Total: <span id="totalCount">--</span></p>
+    </div>
+  </div>
+</div>
   <div class="container mt-5">
     <div class="row">
       <!-- Snake Game -->
@@ -82,5 +88,38 @@
       </div>
     </div>
   </div>
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <p class="mb-1">Bori Foundation. All rights reserved.</p>
+    <p class="mb-0">Contact: <a href="mailto:shp@gafl.hs.kr" class="text-info text-decoration-none">shp@gafl.hs.kr</a></p>
+  </footer>
+  <script>
+  const todayKey = 'visitor_today';
+  const totalKey = 'visitor_total';
+  const dateKey = 'visitor_date';
+
+  const todayCountEl = document.getElementById('todayCount');
+  const totalCountEl = document.getElementById('totalCount');
+
+  const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+
+  let savedDate = localStorage.getItem(dateKey);
+  let todayCount = parseInt(localStorage.getItem(todayKey)) || 0;
+  let totalCount = parseInt(localStorage.getItem(totalKey)) || 0;
+
+  if (savedDate === today) {
+    todayCount += 1;
+  } else {
+    todayCount = 1;
+    localStorage.setItem(dateKey, today);
+  }
+
+  totalCount += 1;
+
+  localStorage.setItem(todayKey, todayCount);
+  localStorage.setItem(totalKey, totalCount);
+
+  todayCountEl.innerText = todayCount;
+  totalCountEl.innerText = totalCount;
+</script>
 </body>
 </html>

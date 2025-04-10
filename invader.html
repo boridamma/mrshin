@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>팡팡 게임</title>
+  <title>탄막 피하기 팡팡 게임</title>
   <style>
     body {
       background-color: white;
@@ -24,7 +24,7 @@
   </style>
 </head>
 <body>
-  <h2>팡팡 게임</h2>
+  <h2>탄막 피하기 팡팡 게임</h2>
   <canvas id="gameCanvas" width="600" height="400"></canvas>
   <div>←↑↓→로 이동, 스페이스바로 공격</div>
   <button id="restartBtn">다시 시작</button>
@@ -32,22 +32,10 @@
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
+
     const playerImg = new Image();
-    const enemyImg = new Image();
-    const bullets = [];
-    const enemies = [];
-    const restartBtn = document.getElementById("restartBtn");
-    let enemyBullets = [];
-    let shootCooldown = 0;
-    let keys = {};
-    let score = 0;
-    let gameOver = false;
-    let imagesLoaded = 0;
     playerImg.src = "mrshin.png"; // ⭐ Player image
-    enemyImg.src = "enemy.png";  //enemy image
-    playerImg.onload = checkImagesLoaded;
-    enemyImg.onload = checkImagesLoaded;
-    
+
     const player = {
       x: canvas.width / 2 - 15,
       y: canvas.height - 50,
@@ -55,27 +43,29 @@
       height: 30,
       speed: 5
     };
-        
-    // 이미지 로드 확인
-    function checkImagesLoaded() {
-        imagesLoaded++;
-        if (imagesLoaded === 2) {
-            gameLoop(); // 이미지 두 개 다 로드된 후에만 시작
-        }
-    }
-        
+
+    const bullets = [];
+    const enemies = [];
+    let enemyBullets = [];
+
+    let keys = {};
+    let score = 0;
+    let gameOver = false;
+
+    const restartBtn = document.getElementById("restartBtn");
     restartBtn.addEventListener("click", () => location.reload());
+
     window.addEventListener("keydown", (e) => { keys[e.key] = true; });
     window.addEventListener("keyup", (e) => { keys[e.key] = false; });
 
     function spawnEnemy() {
-        const enemy = {
-            x: Math.random() * (canvas.width - 20),
-            y: -20,
-            width: 20,
-            height: 20,
-            speed: 2
-        };
+      const enemy = {
+        x: Math.random() * (canvas.width - 20),
+        y: -20,
+        width: 20,
+        height: 20,
+        speed: 2
+      };
       enemies.push(enemy);
     }
 
@@ -122,34 +112,14 @@
       if (keys["ArrowDown"] && player.y + player.height < canvas.height) player.y += player.speed;
 
       // Player shooting
-      if ((keys[" "] || keys["Spacebar"])) {
-          if (shootCooldown <= 0) {
-            bullets.push({ x: player.x + player.width / 2 - 2, y: player.y, width: 4, height: 10 });
-            shootCooldown = 10; // frames between shots
-          }
-      }
-      if (shootCooldown > 0) {
-        shootCooldown--;
+      if ((keys[" "] || keys["Spacebar"]) && bullets.length < 5) {
+        bullets.push({ x: player.x + player.width / 2 - 2, y: player.y, width: 4, height: 10 });
       }
 
       // Move player bullets
       bullets.forEach((b) => b.y -= 5);
+      bullets.filter((b) => b.y > 0);
 
-      //Player bullets destroy enemy bullets
-      bullets = bullets.filter(bullet => {
-            let hit = false;
-            enemyBullets = enemyBullets.filter(eBullet => {
-                const dx = bullet.x - eBullet.x;
-                const dy = bullet.y - eBullet.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < eBullet.radius + bullet.width) {
-                          hit = true;
-                          return false; // remove enemy bullet
-                    }
-                    return true;
-            });
-            return !hit && bullet.y > 0;
-      });
       // Spawn enemies
       if (enemies.length === 0) {
         spawnEnemy();
@@ -226,10 +196,9 @@
       bullets.forEach((b) => ctx.fillRect(b.x, b.y, b.width, b.height));
 
       // Enemies
-      enemies.forEach(enemy => {
-          enemy.y += 2;
-          ctx.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
-      });
+      ctx.fillStyle = "red";
+      enemies.forEach((e) => ctx.fillRect(e.x, e.y, e.width, e.height));
+
       // Enemy bullets
       ctx.fillStyle = "white";
       enemyBullets.forEach((b) => {
@@ -258,6 +227,5 @@
 
     gameLoop();
   </script>
-  <a href="index.html">홈으로</a>
 </body>
 </html>

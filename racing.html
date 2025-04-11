@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Canvas 다루기 </title>
+  <title>키 입력</title>
   <style>
     body {
-      width: 400px
-      height: 200px
+      width: 400px;
+      height: 200px;
       margin: 0;
       padding: 0;
       font-family: 'Times New Roman', serif;
-      position:relative;
+      position: relative;
     }
-    #label1, #label2{
-      position:absolute;
-      font-size:30px;
+
+    #label1, #label2 {
+      position: absolute;
+      font-size: 30px;
     }
+
     #label1 {
       top: 0;
       left: 0;
     }
+
     #label2 {
       top: 80px;
       left: 0;
@@ -27,17 +30,18 @@
   </style>
 </head>
 <body tabindex="0">
-  <div id="label1">KeyCode</div>
-  <div id="label2">KeySym</div>
+  <div id="label1">keycode</div>
+  <div id="label2">keysym</div>
+
   <script>
     const label1 = document.getElementById("label1");
     const label2 = document.getElementById("label2");
 
-    document.body.focus();
+    document.body.focus(); // Ensure body is focused to receive key events
 
-    document.body.EventListner("keydown", function(e) {
-      label1.textContent = "keyCode" + e.keyCode; 
-      label2.textContent = "keySym" + e.key;
+    document.body.addEventListener("keydown", function(e) {
+      label1.textContent = "keycode " + e.keyCode;
+      label2.textContent = "keysym " + e.key;
     });
   </script>
 </body>

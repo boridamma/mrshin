@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>탄막 피하기 팡팡 게임</title>
+  <title>팡팡 게임</title>
   <style>
     body {
       background-color: white;
@@ -24,7 +24,7 @@
   </style>
 </head>
 <body>
-  <h2>탄막 피하기 팡팡 게임</h2>
+  <h2>팡팡 게임</h2>
   <canvas id="gameCanvas" width="600" height="400"></canvas>
   <div>←↑↓→로 이동, 스페이스바로 공격</div>
   <button id="restartBtn">다시 시작</button>
@@ -35,8 +35,8 @@
 
     // 배경 이미지 추가 ⭐
     const bgImg = new Image();
-    bgImg.src = "park.png"; // 너비는 최소 600px 이상이어야 부드럽게 스크롤됨
-    let bgX = 0;
+    bgImg.src = "cosmo.png"; // 너비는 최소 600px 이상이어야 부드럽게 스크롤됨
+    let bgY = 0;
 
     const playerImg = new Image();
     playerImg.src = "mrshin.png";
@@ -111,9 +111,9 @@
       if (gameOver) return;
 
       // 스크롤 배경 위치 업데이트 ⭐
-      bgX -= 1;
-      if (bgX <= -canvas.width) {
-        bgX = 0;
+      bgY += 1;
+      if (bgY >= canvas.width) {
+        bgY = 0;
       }
 
       // Player movement
@@ -182,8 +182,8 @@
 
     function draw() {
       // 스크롤 배경 그리기 ⭐
-      ctx.drawImage(bgImg, bgX, 0, canvas.width, canvas.height);
-      ctx.drawImage(bgImg, bgX + canvas.width, 0, canvas.width, canvas.height);
+      ctx.drawImage(bgImg, 0, bgY - canvas.height, canvas.width, canvas.height);
+      ctx.drawImage(bgImg, 0, bgY, canvas.width, canvas.height);
 
       // 나머지 UI 그리기
       ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);

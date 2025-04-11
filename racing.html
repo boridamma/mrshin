@@ -10,19 +10,35 @@
       margin: 0;
       padding: 0;
       font-family: 'Times New Roman', serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position:relative;
     }
-    #label {
-      position: absolute;
-      top: 60px;
-      left: 80px;
-      font-size: 20px;
+    #label1, #label2{
+      position:absolute;
+      font-size:30px;
+    }
+    #label1 {
+      top: 0;
+      left: 0;
+    }
+    #label2 {
+      top: 80px;
+      left: 0;
     }
   </style>
 </head>
-<body>
-<div id="label">캔버스 다루기</div>
+<body tabindex="0">
+  <div id="label1">KeyCode</div>
+  <div id="label2">KeySym</div>
+  <script>
+    const label1 = document.getElementById("label1");
+    const label2 = document.getElementById("label2");
+
+    document.body.focus();
+
+    document.body.EventListner("keydown", function(e) {
+      label1.textContent = "keyCode" + e.keyCode; 
+      label2.textContent = "keySym" + e.key;
+    });
+  </script>
 </body>
 </html>

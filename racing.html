@@ -2,34 +2,48 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>키 입력</title>
+  <title>화면 스크롤</title>
   <style>
     body {
-      font-family: 'Times New Roman', serif;
-      display: flex;
-      justify-content:center;
-      align-items: center;
-      height: 200px;
       margin: 0;
       padding: 0;
+      overflow: hidden;
     }
-    #clock {
-      font-size: 60px;
+
+    canvas {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <div id="clock">--:--:--</div>
+  <canvas id="canvas" width="480" height="300"></canvas>
 
   <script>
-    function timeNow(){
-      const d = new Date();
-      const t = '${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}';
-      document.getElementById("clock").textContent = t;
-    }
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-    setInterval(timeNow, 1000);
-    timeNow();
+    const img = new Image();
+    img.src = 'park.png'; // Make sure this path is correct
+
+    let x = 0;
+
+    img.onload = function() {
+      function scrollBg() {
+        x += 1;
+        if (x === 480) x = 0;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw two images side-by-side to scroll
+        ctx.drawImage(img, x - 480, 0, 480, 300);
+        ctx.drawImage(img, x, 0, 480, 300);
+
+        requestAnimationFrame(scrollBg);
+      }
+
+      scrollBg();
+    };
   </script>
 </body>
 </html>

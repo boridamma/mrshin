@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Flappy Bird</title>
+  <title>Flappy Bird (No PNG)</title>
   <style>
     canvas {
       display: block;
@@ -17,21 +17,10 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Load images
-const birdFrames = [
-  "flappy0.png", // up
-  "flappy1.png", // mid
-  "flappy2.png"  // down
-];
-
-let birdImages = [];
-let birdIndex = 0;
-
-let bird = {
+const bird = {
   x: 50,
   y: 150,
-  width: 34,
-  height: 24,
+  radius: 12,
   gravity: 0.6,
   lift: -10,
   velocity: 0
@@ -39,70 +28,57 @@ let bird = {
 
 let pipes = [];
 let pipeGap = 120;
-let pipeWidth = 52;
+let pipeWidth = 50;
 let pipeSpeed = 2;
-
 let score = 0;
 
-function loadImages(callback) {
-  let loaded = 0;
-  for (let i = 0; i < birdFrames.length; i++) {
-    let img = new Image();
-    img.src = birdFrames[i];
-    img.onload = () => {
-      birdImages[i] = img;
-      loaded++;
-      if (loaded === birdFrames.length) callback();
-    };
-  }
-}
-
 function createPipe() {
-  let topHeight = Math.random() * (canvas.height - pipeGap - 100) + 50;
-  pipes.push({
-    x: canvas.width,
-    top: topHeight,
-    bottom: topHeight + pipeGap
-  });
+  let top = Math.random() * (canvas.height - pipeGap - 100) + 50;
+  pipes.push({ x: canvas.width, top, bottom: top + pipeGap });
 }
 
 function drawPipes() {
-  for (let i = 0; i < pipes.length; i++) {
-    const p = pipes[i];
-    let longPipe = new Image();
-    longPipe.src = "longpipe.png";
-    let shortPipe = new Image();
-    shortPipe.src = "shortpipe.png";
-    ctx.drawImage(longPipe, p.x, 0, pipeWidth, p.top);
-    ctx.drawImage(shortPipe, p.x, p.bottom, pipeWidth, canvas.height - p.bottom);
+  ctx.fillStyle = "green";
+  for (let pipe of pipes) {
+    // Top pipe
+    ctx.fillRect(pipe.x, 0, pipeWidth, pipe.top);
+    // Bottom pipe
+    ctx.fillRect(pipe.x, pipe.bottom, pipeWidth, canvas.height - pipe.bottom);
   }
 }
 
 function drawBird() {
-  birdIndex = (birdIndex + 1) % birdImages.length;
-  ctx.drawImage(birdImages[birdIndex], bird.x, bird.y, bird.width, bird.height);
+  ctx.fillStyle = "yellow";
+  ctx.beginPath();
+  ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "orange";
+  ctx.stroke();
 }
 
 function update() {
   bird.velocity += bird.gravity;
   bird.y += bird.velocity;
 
-  if (bird.y + bird.height >= canvas.height || bird.y < 0) {
+  // Collision with ground or ceiling
+  if (bird.y + bird.radius >= canvas.height || bird.y - bird.radius <= 0) {
     reset();
   }
 
   for (let i = pipes.length - 1; i >= 0; i--) {
-    pipes[i].x -= pipeSpeed;
+    let p = pipes[i];
+    p.x -= pipeSpeed;
 
+    // Collision with pipes
     if (
-      bird.x + bird.width > pipes[i].x &&
-      bird.x < pipes[i].x + pipeWidth &&
-      (bird.y < pipes[i].top || bird.y + bird.height > pipes[i].bottom)
+      bird.x + bird.radius > p.x &&
+      bird.x - bird.radius < p.x + pipeWidth &&
+      (bird.y - bird.radius < p.top || bird.y + bird.radius > p.bottom)
     ) {
       reset();
     }
 
-    if (pipes[i].x + pipeWidth < 0) {
+    if (p.x + pipeWidth < 0) {
       pipes.splice(i, 1);
       score++;
     }
@@ -131,17 +107,14 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-window.addEventListener("keydown", function (e) {
+window.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
     bird.velocity = bird.lift;
   }
 });
 
 setInterval(createPipe, 1500);
-
-loadImages(() => {
-  gameLoop();
-});
+gameLoop();
 </script>
 </body>
 </html>

@@ -1,133 +1,187 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  <!-- Font Awesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+  <title>Flappy Bird Clone</title>
   <style>
-    .game-container {
-      background-color: orange;
-      transition: background-color 0.3s ease;
-      border-radius: 10px;
-      padding: 20px;
-      color: white;
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      background: #000;
     }
 
-    .game-container:hover {
-      cursor: pointer;
-    }
-
-    .snake-container:hover {
-      background-color: yellow;
-      color: black;
-    }
-
-    .invader-container:hover {
-      background-color: pink;
-      color: black;
-    }
-
-    .racing-container:hover {
-      background-color: green; /* Optional: stays orange, or you can change it */
+    canvas {
+      display: block;
+      background: #000;
     }
   </style>
-
-  <title>Mr. Shin 월드</title>
 </head>
 <body>
-  <div class="container-fluid p-5 bg-primary text-white text-center">
-    <div class="d-flex justify-content-between align-items-center">
-    <h1><i class="fas fa-globe"></i> Mr. Shin 월드</h1>
-    <p>배움과 즐거움이 있는 곳!</p> 
-  </div>
-  <div class="text-end">
-      <p class="mb-0">👀 Today: <span id="todayCount">--</span></p>
-      <p class="mb-0">📊 Total: <span id="totalCount">--</span></p>
-    </div>
-  </div>
-</div>
-  <div class="container mt-5">
-    <div class="row">
-      <!-- Snake Game -->
-      <div class="col-sm-4 text-center">
-        <div class="game-container snake-container">
-          <a href="snake.html" class="text-decoration-none text-reset">
-            <h3><i class="fas fa-apple-alt"></i> 딸기 먹기 게임</h3>
-            <p>화살표로 얼굴을 움직여 보아요.</p>
-            <p>딸기를 먹으면 얼굴이 커져요.</p>
-          </a>
-        </div>
-      </div>
+<canvas id="gameCanvas"></canvas>
 
-      <!-- Invader Game -->
-      <div class="col-sm-4 text-center">
-        <div class="game-container invader-container">
-          <a href="invader.html" class="text-decoration-none text-reset">
-            <h3><i class="fas fa-meteor"></i> 팡팡 게임</h3>
-            <p>화살표로 적을 피하고 스페이스바로 미사일을 발사해요.</p>
-          </a>
-        </div>
-      </div>
-      <!-- Flappybird Game -->
-      <div class="col-sm-4 text-center">
-        <div class="game-container invader-container">
-          <a href="flappy.html" class="text-decoration-none text-reset">
-            <h3><i class="fas fa-meteor"></i> 펄럭펄럭 게임</h3>
-            <p>스페이스바를 눌러 날아서 장애물을 통과해요.</p>
-          </a>
-        </div>
-      </div>
-      <!-- Racing Game -->
-      <div class="col-sm-4 text-center">
-        <div class="game-container racing-container">
-          <a href="racing.html" class="text-decoration-none text-reset">
-            <h3><i class="fas fa-car"></i> 레이싱 게임</h3>
-            <p>준비 중...</p>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-  <footer class="bg-dark text-white text-center py-3 mt-5">
-    <p class="mb-1">Bori Foundation. All rights reserved.</p>
-    <p class="mb-0">Contact: <a href="mailto:shp@gafl.hs.kr" class="text-info text-decoration-none">shp@gafl.hs.kr</a></p>
-  </footer>
-  <script>
-  const todayKey = 'visitor_today';
-  const totalKey = 'visitor_total';
-  const dateKey = 'visitor_date';
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-  const todayCountEl = document.getElementById('todayCount');
-  const totalCountEl = document.getElementById('totalCount');
+// Resize canvas to fullscreen
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
-  const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+// Load images
+const bgImg = new Image();
+bgImg.src = "park.png";
 
-  let savedDate = localStorage.getItem(dateKey);
-  let todayCount = parseInt(localStorage.getItem(todayKey)) || 0;
-  let totalCount = parseInt(localStorage.getItem(totalKey)) || 0;
+const birdImgs = [new Image(), new Image(), new Image()];
+birdImgs[0].src = "up.png";
+birdImgs[1].src = "middle.png";
+birdImgs[2].src = "down.png";
 
-  if (savedDate === today) {
-    todayCount += 1;
-  } else {
-    todayCount = 1;
-    localStorage.setItem(dateKey, today);
+const pipeLongImg = new Image();
+pipeLongImg.src = "longpipe.png";
+const pipeShortImg = new Image();
+pipeShortImg.src = "shortpipe.png";
+
+// Bird
+const bird = {
+  x: 80,
+  y: 150,
+  frame: 0,
+  frameCounter: 0,
+  gravity: 0.4,
+  lift: -7,
+  velocity: 0,
+  rotation: 0
+};
+
+let pipes = [];
+let pipeGap = 180;
+let pipeWidth = 60;
+let pipeSpeed = 2;
+let pipeInterval = 1800;
+let score = 0;
+let showTouchMsg = true;
+
+function createPipe() {
+  let gapStart = Math.random() * (canvas.height - pipeGap - 100) + 50;
+  pipes.push({ x: canvas.width, top: gapStart, bottom: gapStart + pipeGap });
+}
+
+function drawBackground() {
+  ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+}
+
+function drawPipes() {
+  for (let pipe of pipes) {
+    // Draw top pipe (flipped upside down)
+    ctx.save();
+    ctx.translate(pipe.x + pipeWidth / 2, pipe.top);
+    ctx.scale(1, -1); // Flip vertically
+    ctx.drawImage(pipeShortImg, -pipeWidth / 2, 0, pipeWidth, pipe.top);
+    ctx.restore();
+
+    // Draw bottom pipe
+    ctx.drawImage(pipeLongImg, pipe.x, pipe.bottom, pipeWidth, canvas.height - pipe.bottom);
+  }
+}
+
+function drawBird() {
+  const img = birdImgs[bird.frame];
+  ctx.save();
+  ctx.translate(bird.x, bird.y);
+  ctx.rotate(bird.rotation);
+  ctx.drawImage(img, -24, -24, 48, 48);
+  ctx.restore();
+}
+
+function update() {
+  bird.velocity += bird.gravity;
+  bird.y += bird.velocity;
+  bird.rotation = Math.min(Math.max(bird.velocity * 0.1, -0.5), 1.2);
+
+  bird.frameCounter++;
+  if (bird.frameCounter % 6 === 0) {
+    bird.frame = (bird.frame + 1) % birdImgs.length;
   }
 
-  totalCount += 1;
+  // Collision with screen bounds
+  if (bird.y + 12 >= canvas.height || bird.y - 12 <= 0) {
+    reset();
+  }
 
-  localStorage.setItem(todayKey, todayCount);
-  localStorage.setItem(totalKey, totalCount);
+  for (let i = pipes.length - 1; i >= 0; i--) {
+    let p = pipes[i];
+    p.x -= pipeSpeed;
 
-  todayCountEl.innerText = todayCount;
-  totalCountEl.innerText = totalCount;
+    if (
+      bird.x + 12 > p.x &&
+      bird.x - 12 < p.x + pipeWidth &&
+      (bird.y - 12 < p.top || bird.y + 12 > p.bottom)
+    ) {
+      reset();
+    }
+
+    if (p.x + pipeWidth < 0) {
+      pipes.splice(i, 1);
+      score++;
+    }
+  }
+}
+
+function reset() {
+  bird.y = canvas.height / 2;
+  bird.velocity = 0;
+  bird.frame = 0;
+  pipes = [];
+  score = 0;
+  showTouchMsg = true;
+}
+
+function draw() {
+  drawBackground();
+  drawPipes();
+  drawBird();
+
+  ctx.fillStyle = "white";
+  ctx.font = "28px Arial";
+  ctx.fillText("Score: " + score, 20, 50);
+
+  if (showTouchMsg) {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.fillRect(canvas.width / 2 - 160, canvas.height / 2 - 40, 320, 60);
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("점프하려면 화면을 터치하세요.", canvas.width / 2, canvas.height / 2);
+    ctx.textAlign = "start";
+  }
+}
+
+function jump() {
+  bird.velocity = bird.lift;
+  showTouchMsg = false;
+}
+
+window.addEventListener("keydown", (e) => {
+  if (e.code === "Space") jump();
+});
+
+canvas.addEventListener("touchstart", () => {
+  jump();
+});
+
+setInterval(createPipe, pipeInterval);
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+gameLoop();
 </script>
 </body>
 </html>

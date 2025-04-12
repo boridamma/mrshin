@@ -6,21 +6,42 @@
   <title>팡팡 게임</title>
   <style>
     body {
-      background-color: white;
-      text-align: center;
-    }
-    canvas {
-      border: 2px solid black;
-      display: block;
-      margin: auto;
-      background-color: black;
-    }
-    #restartBtn {
-      display: none;
-      font-size: 20px;
-      padding: 10px;
-      margin-top: 10px;
-    }
+    background-color: white;
+    text-align: center;
+    margin: 0;
+    overflow: hidden;
+  }
+  canvas {
+    border: 2px solid black;
+    display: block;
+    margin: auto;
+    background-color: black;
+  }
+  #restartBtn {
+    display: none;
+    font-size: 20px;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  .touch-controls {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 1000;
+  }
+  .btn {
+    width: 60px;
+    height: 60px;
+    font-size: 25px;
+    border-radius: 50%;
+    border: none;
+    background: #444;
+    color: white;
+    user-select: none;
+  }
   </style>
 </head>
 <body>
@@ -28,10 +49,33 @@
   <canvas id="gameCanvas" width="600" height="400"></canvas>
   <div>←↑↓→로 이동, 스페이스바로 공격</div>
   <button id="restartBtn">다시 시작</button>
-
+  <!-- 👇 터치용 컨트롤러 버튼 -->
+  <div class="touch-controls">
+    <button class="btn" id="leftBtn">⬅️</button>
+    <button class="btn" id="upBtn">⬆️</button>
+    <button class="btn" id="downBtn">⬇️</button>
+    <button class="btn" id="rightBtn">➡️</button>
+    <button class="btn" id="shootBtn">🔫</button>
+  </div>
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
+    const keys = {};
+    const updateTouch = (key, isDown) => { keys[key] = isDown; };
+    document.getElementById("leftBtn").addEventListener("touchstart", () => updateTouch("ArrowLeft", true));
+    document.getElementById("leftBtn").addEventListener("touchend", () => updateTouch("ArrowLeft", false));
+
+    document.getElementById("rightBtn").addEventListener("touchstart", () => updateTouch("ArrowRight", true));
+    document.getElementById("rightBtn").addEventListener("touchend", () => updateTouch("ArrowRight", false));
+
+    document.getElementById("upBtn").addEventListener("touchstart", () => updateTouch("ArrowUp", true));
+    document.getElementById("upBtn").addEventListener("touchend", () => updateTouch("ArrowUp", false));
+
+    document.getElementById("downBtn").addEventListener("touchstart", () => updateTouch("ArrowDown", true));
+    document.getElementById("downBtn").addEventListener("touchend", () => updateTouch("ArrowDown", false));
+
+    document.getElementById("shootBtn").addEventListener("touchstart", () => updateTouch(" ", true));
+    document.getElementById("shootBtn").addEventListener("touchend", () => updateTouch(" ", false));
 
     // 배경 이미지 추가 ⭐
     const bgImg = new Image();

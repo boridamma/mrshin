@@ -37,7 +37,7 @@
 </head>
 <body>
   <h2>팡팡 게임</h2>
-  <canvas id="gameCanvas" width="600" height="400"></canvas>
+  <canvas id="gameCanvas" width="600" height="600"></canvas>
   <button id="restartBtn">다시 시작</button>
   <script>
     const canvas = document.getElementById("gameCanvas");
@@ -87,10 +87,10 @@
     playerImg.src = "mrshin.png";
 
     const player = {
-      x: canvas.width / 2 - 96,
-      y: canvas.height - 180,
-      width: 192,
-      height: 192,
+      x: canvas.width / 2 - 66,
+      y: canvas.height - 120,
+      width: 152,
+      height: 152,
       speed: 5
     };
 

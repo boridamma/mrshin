@@ -23,15 +23,6 @@
     padding: 10px;
     margin-top: 10px;
   }
-  .touch-controls {
-    position: fixed;
-    bottom: 20px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    z-index: 1000;
-  }
   .btn {
     width: 60px;
     height: 60px;
@@ -47,36 +38,45 @@
 <body>
   <h2>팡팡 게임</h2>
   <canvas id="gameCanvas" width="600" height="400"></canvas>
-  <div>←↑↓→로 이동, 스페이스바로 공격</div>
   <button id="restartBtn">다시 시작</button>
-  <!-- 👇 터치용 컨트롤러 버튼 -->
-  <div class="touch-controls">
-    <button class="btn" id="leftBtn">⬅️</button>
-    <button class="btn" id="upBtn">⬆️</button>
-    <button class="btn" id="downBtn">⬇️</button>
-    <button class="btn" id="rightBtn">➡️</button>
-    <button class="btn" id="shootBtn">🔫</button>
-  </div>
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     const keys = {};
-    const updateTouch = (key, isDown) => { keys[key] = isDown; };
-    document.getElementById("leftBtn").addEventListener("touchstart", () => updateTouch("ArrowLeft", true));
-    document.getElementById("leftBtn").addEventListener("touchend", () => updateTouch("ArrowLeft", false));
+    let isTouchingPlayer = false;
 
-    document.getElementById("rightBtn").addEventListener("touchstart", () => updateTouch("ArrowRight", true));
-    document.getElementById("rightBtn").addEventListener("touchend", () => updateTouch("ArrowRight", false));
+    canvas.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const touchX = touch.clientX - rect.left;
+      const touchY = touch.clientY - rect.top;
 
-    document.getElementById("upBtn").addEventListener("touchstart", () => updateTouch("ArrowUp", true));
-    document.getElementById("upBtn").addEventListener("touchend", () => updateTouch("ArrowUp", false));
+      if (
+        touchX >= player.x &&
+        touchX <= player.x + player.width &&
+        touchY >= player.y &&
+        touchY <= player.y + player.height
+        ) {
+          isTouchingPlayer = true;
+          }
+        });
 
-    document.getElementById("downBtn").addEventListener("touchstart", () => updateTouch("ArrowDown", true));
-    document.getElementById("downBtn").addEventListener("touchend", () => updateTouch("ArrowDown", false));
+    canvas.addEventListener("touchmove", (e) => {
+      if (isTouchingPlayer) {
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        player.x = touch.clientX - rect.left - player.width / 2;
+        player.y = touch.clientY - rect.top - player.height / 2;
 
-    document.getElementById("shootBtn").addEventListener("touchstart", () => updateTouch(" ", true));
-    document.getElementById("shootBtn").addEventListener("touchend", () => updateTouch(" ", false));
+        // Clamp inside canvas
+          player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+          player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+        }
+      });
 
+    canvas.addEventListener("touchend", () => {
+        isTouchingPlayer = false;
+    });
     // 배경 이미지 추가 ⭐
     const bgImg = new Image();
     bgImg.src = "cosmo.png"; // 너비는 최소 600px 이상이어야 부드럽게 스크롤됨
@@ -166,13 +166,10 @@
       if (keys["ArrowDown"] && player.y + player.height < canvas.height) player.y += player.speed;
 
       // Shooting
-      if (keys[" "] || keys["Spacebar"]) {
-        if (shootCooldown <= 0) {
+      if ((keys[" "] || keys["Spacebar"] || isTouchingPlayer) && shootCooldown <= 0) {
           bullets.push({ x: player.x + player.width / 2 - 2, y: player.y, width: 4, height: 10 });
           shootCooldown = 10;
-        }
       }
-      if (shootCooldown > 0) shootCooldown--;
 
       bullets.forEach((b) => b.y -= 5);
       bullets.filter((b) => b.y > 0);

@@ -2,17 +2,18 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>펄럭펄럭 게임</title>
+  <title>펄럭펄럭 게임임</title>
   <style>
     canvas {
       display: block;
       margin: auto;
-      background: #000; /* fallback */
+      background: #000;
     }
   </style>
 </head>
 <body>
 <canvas id="gameCanvas" width="400" height="600"></canvas>
+
 <script>
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -35,22 +36,27 @@ pipeLongImg.src = "longpipe.png";
 const pipeShortImg = new Image();
 pipeShortImg.src = "shortpipe.png";
 
+// Bird properties
 const bird = {
-  x: 50,
+  x: 70,
   y: 150,
   frame: 0,
   frameCounter: 0,
   gravity: 0.4,
   lift: -7,
-  velocity: 0
+  velocity: 0,
+  rotation: 0
 };
 
 let pipes = [];
 let pipeGap = 180;
 let pipeWidth = 50;
 let pipeSpeed = 2;
-let pipeInterval = 1500 * 1.2; // 20% increased distance
+let pipeInterval = 1800;
 let score = 0;
+
+// Show message once
+let showTouchMsg = true;
 
 function createPipe() {
   let top = Math.random() * (canvas.height - pipeGap - 100) + 50;
@@ -63,26 +69,34 @@ function drawBackground() {
 
 function drawPipes() {
   for (let pipe of pipes) {
-    let pipeHeight = pipe.top;
-    ctx.drawImage(pipeShortImg, pipe.x, 0, pipeWidth, pipeHeight); // top
-    ctx.drawImage(pipeLongImg, pipe.x, pipe.bottom, pipeWidth, canvas.height - pipe.bottom); // bottom
+    ctx.drawImage(pipeShortImg, pipe.x, 0, pipeWidth, pipe.top);
+    ctx.drawImage(pipeLongImg, pipe.x, pipe.bottom, pipeWidth, canvas.height - pipe.bottom);
   }
 }
 
 function drawBird() {
-  ctx.drawImage(birdImgs[bird.frame], bird.x - 24, bird.y - 24, 48, 48);
+  const img = birdImgs[bird.frame];
+
+  ctx.save();
+  ctx.translate(bird.x, bird.y);
+  ctx.rotate(bird.rotation);
+  ctx.drawImage(img, -24, -24, 48, 48);
+  ctx.restore();
 }
 
 function update() {
   bird.velocity += bird.gravity;
   bird.y += bird.velocity;
 
+  // Rotation based on velocity
+  bird.rotation = Math.min(Math.max(bird.velocity * 0.1, -0.5), 1.2);
+
   bird.frameCounter++;
   if (bird.frameCounter % 6 === 0) {
     bird.frame = (bird.frame + 1) % birdImgs.length;
   }
 
-  // Collision with ground or ceiling
+  // Collision with floor or ceiling
   if (bird.y + 12 >= canvas.height || bird.y - 12 <= 0) {
     reset();
   }
@@ -91,7 +105,6 @@ function update() {
     let p = pipes[i];
     p.x -= pipeSpeed;
 
-    // Collision with pipes
     if (
       bird.x + 12 > p.x &&
       bird.x - 12 < p.x + pipeWidth &&
@@ -113,15 +126,27 @@ function reset() {
   bird.frame = 0;
   pipes = [];
   score = 0;
+  showTouchMsg = true;
 }
 
 function draw() {
   drawBackground();
   drawPipes();
   drawBird();
+
   ctx.fillStyle = "white";
   ctx.font = "30px Arial";
   ctx.fillText("Score: " + score, 10, 50);
+
+  if (showTouchMsg) {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.fillRect(40, canvas.height / 2 - 40, 320, 60);
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("점프하려면 화면을 터치하세요.", canvas.width / 2, canvas.height / 2);
+    ctx.textAlign = "start";
+  }
 }
 
 function gameLoop() {
@@ -130,12 +155,23 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
+// Controls
+function jump() {
+  bird.velocity = bird.lift;
+  showTouchMsg = false;
+}
+
 window.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
-    bird.velocity = bird.lift;
+    jump();
   }
 });
 
+canvas.addEventListener("touchstart", (e) => {
+  jump();
+});
+
+// Start
 setInterval(createPipe, pipeInterval);
 gameLoop();
 </script>

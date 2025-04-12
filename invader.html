@@ -136,18 +136,21 @@
       }
 
       const dx = player.x + player.width / 2 - x;
-      const dy = player.y + player.height / 2 - y;
+      let dy = player.y + player.height / 2 - y;
+
+      // Force dy to be at least slightly negative so bullets shoot downward
+      if (dy > 0) dy = -Math.abs(dy);
+
       const angle = Math.atan2(dy, dx);
       const speed = 2;
 
       enemyBullets.push({
-        x: x,
-        y: y,
-        radius: 5,
-        dx: Math.cos(angle) * speed,
-        dy: Math.sin(angle) * speed
+          x: x,
+          y: y,
+          radius: 5,
+          dx: Math.cos(angle) * speed,
+          dy: Math.sin(angle) * speed
       });
-    }
 
     let bulletSpawnTimer = 0;
 

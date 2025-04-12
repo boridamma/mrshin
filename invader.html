@@ -197,7 +197,31 @@
           }
         });
       });
+      bullets.forEach((bullet, bi) => {
+      enemies.forEach((enemy, ei) => {
+          if (
+              bullet.x < enemy.x + enemy.width &&
+              bullet.x + bullet.width > enemy.x &&
+              bullet.y < enemy.y + enemy.height &&
+              bullet.y + bullet.height > enemy.y
+            ) {
+                bullets.splice(bi, 1);
+                enemies.splice(ei, 1);
+                score++;
+              }
+          });
 
+      enemyBullets.forEach((eb, ebi) => {
+          const dist = Math.hypot(
+            bullet.x + bullet.width / 2 - eb.x,
+            bullet.y + bullet.height / 2 - eb.y
+          );
+          if (dist < eb.radius + bullet.width / 2) {
+            bullets.splice(bi, 1);
+            enemyBullets.splice(ebi, 1);
+            }
+            });
+      });
       for (let b of enemyBullets) {
         const dist = Math.hypot(player.x + player.width / 2 - b.x, player.y + player.height / 2 - b.y);
         if (dist < b.radius + player.width / 2) {

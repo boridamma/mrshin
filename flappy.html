@@ -1,43 +1,32 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>펄럭펄럭 게임</title>
+  <title>Flappy Bird Clone</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      height: 100%;
-      background: #000;
-    }
-
     canvas {
       display: block;
+      margin: auto;
       background: #000;
     }
   </style>
 </head>
 <body>
-<canvas id="gameCanvas"></canvas>
+<canvas id="gameCanvas" width="400" height="600"></canvas>
 
 <script>
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Resize canvas to fullscreen
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
-
 // Load images
 const bgImg = new Image();
 bgImg.src = "park.png";
 
-const birdImgs = [new Image(), new Image(), new Image()];
+const birdImgs = [
+  new Image(),
+  new Image(),
+  new Image()
+];
 birdImgs[0].src = "up.png";
 birdImgs[1].src = "middle.png";
 birdImgs[2].src = "down.png";
@@ -47,9 +36,9 @@ pipeLongImg.src = "longpipe.png";
 const pipeShortImg = new Image();
 pipeShortImg.src = "shortpipe.png";
 
-// Bird
+// Bird properties
 const bird = {
-  x: 80,
+  x: 70,
   y: 150,
   frame: 0,
   frameCounter: 0,
@@ -61,15 +50,17 @@ const bird = {
 
 let pipes = [];
 let pipeGap = 180;
-let pipeWidth = 60;
+let pipeWidth = 50;
 let pipeSpeed = 2;
 let pipeInterval = 1800;
 let score = 0;
+
+// Show message once
 let showTouchMsg = true;
 
 function createPipe() {
-  let gapStart = Math.random() * (canvas.height - pipeGap - 100) + 50;
-  pipes.push({ x: canvas.width, top: gapStart, bottom: gapStart + pipeGap });
+  let top = Math.random() * (canvas.height - pipeGap - 100) + 50;
+  pipes.push({ x: canvas.width, top, bottom: top + pipeGap });
 }
 
 function drawBackground() {
@@ -78,20 +69,14 @@ function drawBackground() {
 
 function drawPipes() {
   for (let pipe of pipes) {
-    // Draw top pipe (flipped upside down)
-    ctx.save();
-    ctx.translate(pipe.x + pipeWidth / 2, pipe.top);
-    ctx.scale(1, -1); // Flip vertically
-    ctx.drawImage(pipeShortImg, -pipeWidth / 2, 0, pipeWidth, pipe.top);
-    ctx.restore();
-
-    // Draw bottom pipe
+    ctx.drawImage(pipeShortImg, pipe.x, 0, pipeWidth, pipe.top);
     ctx.drawImage(pipeLongImg, pipe.x, pipe.bottom, pipeWidth, canvas.height - pipe.bottom);
   }
 }
 
 function drawBird() {
   const img = birdImgs[bird.frame];
+
   ctx.save();
   ctx.translate(bird.x, bird.y);
   ctx.rotate(bird.rotation);
@@ -102,6 +87,8 @@ function drawBird() {
 function update() {
   bird.velocity += bird.gravity;
   bird.y += bird.velocity;
+
+  // Rotation based on velocity
   bird.rotation = Math.min(Math.max(bird.velocity * 0.1, -0.5), 1.2);
 
   bird.frameCounter++;
@@ -109,7 +96,7 @@ function update() {
     bird.frame = (bird.frame + 1) % birdImgs.length;
   }
 
-  // Collision with screen bounds
+  // Collision with floor or ceiling
   if (bird.y + 12 >= canvas.height || bird.y - 12 <= 0) {
     reset();
   }
@@ -134,7 +121,7 @@ function update() {
 }
 
 function reset() {
-  bird.y = canvas.height / 2;
+  bird.y = 150;
   bird.velocity = 0;
   bird.frame = 0;
   pipes = [];
@@ -148,12 +135,12 @@ function draw() {
   drawBird();
 
   ctx.fillStyle = "white";
-  ctx.font = "28px Arial";
-  ctx.fillText("Score: " + score, 20, 50);
+  ctx.font = "30px Arial";
+  ctx.fillText("Score: " + score, 10, 50);
 
   if (showTouchMsg) {
     ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.fillRect(canvas.width / 2 - 160, canvas.height / 2 - 40, 320, 60);
+    ctx.fillRect(40, canvas.height / 2 - 40, 320, 60);
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
     ctx.textAlign = "center";
@@ -162,25 +149,30 @@ function draw() {
   }
 }
 
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+// Controls
 function jump() {
   bird.velocity = bird.lift;
   showTouchMsg = false;
 }
 
 window.addEventListener("keydown", (e) => {
-  if (e.code === "Space") jump();
+  if (e.code === "Space") {
+    jump();
+  }
 });
 
-canvas.addEventListener("touchstart", () => {
+canvas.addEventListener("touchstart", (e) => {
   jump();
 });
 
+// Start
 setInterval(createPipe, pipeInterval);
-function gameLoop() {
-  update();
-  draw();
-  requestAnimationFrame(gameLoop);
-}
 gameLoop();
 </script>
 </body>

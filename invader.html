@@ -110,12 +110,13 @@
 
     const enemyImg = new Image();
     enemyImg.src = 'enemy.png';
+    
     function spawnEnemy() {
       const enemy = {
         x: Math.random() * (canvas.width - 20),
         y: -20,
-        width: 20,
-        height: 20,
+        width: 60,
+        height: 60,
         speed: 2
       };
       enemies.push(enemy);
@@ -134,20 +135,20 @@
   enemyBullets.push({
     x: x,
     y: y,
-    radius: 5,
+    radius: 7.5,
     dx: Math.cos(angle) * speed,
     dy: Math.sin(angle) * speed
   });
 }
 
     let bulletSpawnTimer = 0;
-
+    let enemySpawnTimer = 0;
     function update() {
       if (gameOver) return;
 
       // 스크롤 배경 위치 업데이트 ⭐
       bgY += 1;
-      if (bgY >= canvas.width) {
+      if (bgY >= canvas.height) {
         bgY = 0;
       }
 
@@ -181,6 +182,11 @@
         bulletSpawnTimer = 0;
       }
 
+      enemySpawnTimer++;
+      if (enemySpawnTime > 100){
+        spawnEnemy();
+        enemySpawnTimer = 0;
+      }
       enemyBullets.forEach((b) => {
         b.x += b.dx;
         b.y += b.dy;

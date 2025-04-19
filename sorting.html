@@ -51,6 +51,21 @@
       transform: scale(1.05);
       background-color: darkgreen;
     }
+    #resetButton {
+      font-size: 2rem;
+      padding: 20px 40px;
+      margin: 20px 10px 0 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      transition: transform 0.2s ease;
+    }
+
+    #resetButton:hover {
+      transform: scale(1.05);
+      background-color: darkred;
+    }
     #speechBubble {
       display: none;
       position: absolute;
@@ -112,6 +127,7 @@
 
 <br>
 <button id="sortButton">Scream!</button>
+<button id="resetButton">Reset</button>
 <a id="homeButton" href="index.html">홈으로</a>
 <footer class="bg-dark text-white text-center py-3 mt-5">
   <p class="mb-1">Bori Foundation. All rights reserved.</p>
@@ -121,7 +137,11 @@
   const sortButton = document.getElementById("sortButton");
   const sortingHatImage = document.getElementById("sortingHatImage");
   const speechBubble = document.getElementById("speechBubble");
+  const resetButton = document.getElementById("resetButton");
 
+  resetButton.addEventListener("click", function() {
+    location.reload();
+  });
   sortButton.addEventListener("click", function() {
       // Reset to thinking frame
       sortingHatImage.src = "img/sortinghat_frame_1.jpeg";

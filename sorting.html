@@ -46,12 +46,48 @@
       font-size: 24px;
       box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
     }
+    .game-container {
+      background-color: orange;
+      transition: background-color 0.3s ease;
+      border-radius: 10px;
+      padding: 20px;
+      color: white;
+    }
+
+    .game-container:hover {
+      cursor: pointer;
+    }
+
+    .snake-container:hover {
+      background-color: yellow;
+      color: black;
+    }
+
+    .invader-container:hover {
+      background-color: pink;
+      color: black;
+    }
+
+    .racing-container:hover {
+      background-color: #ffa500; /* Optional: stays orange, or you can change it */
+    }
   </style>
 
   <title>Sorting Hat Random Assign</title>
 </head>
 <body>
-
+<div class="container-fluid p-5 bg-primary text-white">
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="text-center flex-grow-1">
+      <h1><i class="fas fa-globe"></i> Mr. Shin 월드</h1>
+      <p>배움과 즐거움이 있는 곳!</p> 
+    </div>
+    <div class="text-end">
+      <p class="mb-0">👀 Today: <span id="todayCount">--</span></p>
+      <p class="mb-0">📊 Total: <span id="totalCount">--</span></p>
+    </div>
+  </div>
+</div>
 <div style="position: relative; display: inline-block;">
   <img id="sortingHatImage" src="img/sortinghat_frame_1.jpeg" alt="Sorting Hat">
   <div id="speechBubble"></div>
@@ -59,7 +95,11 @@
 
 <br>
 <button id="sortButton">Scream!</button>
-
+<a href="index.html">홈으로</a>
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <p class="mb-1">Bori Foundation. All rights reserved.</p>
+  <p class="mb-0">Contact: <a href="mailto:shp@gafl.hs.kr" class="text-info text-decoration-none">shp@gafl.hs.kr</a></p>
+</footer>
 <script>
   const sortButton = document.getElementById("sortButton");
   const sortingHatImage = document.getElementById("sortingHatImage");
@@ -85,6 +125,33 @@
 
       }, 1000); // 1 second delay
   });
+  const todayKey = 'visitor_today';
+  const totalKey = 'visitor_total';
+  const dateKey = 'visitor_date';
+
+  const todayCountEl = document.getElementById('todayCount');
+  const totalCountEl = document.getElementById('totalCount');
+
+  const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+
+  let savedDate = localStorage.getItem(dateKey);
+  let todayCount = parseInt(localStorage.getItem(todayKey)) || 0;
+  let totalCount = parseInt(localStorage.getItem(totalKey)) || 0;
+
+  if (savedDate === today) {
+    todayCount += 1;
+  } else {
+    todayCount = 1;
+    localStorage.setItem(dateKey, today);
+  }
+
+  totalCount += 1;
+
+  localStorage.setItem(todayKey, todayCount);
+  localStorage.setItem(totalKey, totalCount);
+
+  todayCountEl.innerText = todayCount;
+  totalCountEl.innerText = totalCount;
 </script>
 
 </body>

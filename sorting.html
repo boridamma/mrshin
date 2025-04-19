@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorting Hat</title>
     <style>
-        #sortingHatFrames img {
-            display: none;
-        }
-        #sortingHatFrames img.active {
-            display: block;
+        #sortingHatImage {
+            width: 300px; /* Adjust the size of the image */
+            height: auto;
         }
     </style>
 </head>
@@ -17,37 +15,15 @@
 
 <button id="sortButton">Click to Sort!</button>
 
-<div id="sortingHatFrames">
-    <img src="img/sortinghat_frame_1.jpeg" alt="Sorting Hat Frame 1">
-    <img src="img/sortinghat_frame_2.jpeg" alt="Sorting Hat Frame 2">
-    <img src="img/sortinghat_frame_3.jpeg" alt="Sorting Hat Frame 3">
-    <img src="img/sortinghat_frame_4.jpeg" alt="Sorting Hat Frame 4">
-    <img src="img/sortinghat_frame_5.jpeg" alt="Sorting Hat Frame 5">
-    <img src="img/sortinghat_frame_6.jpeg" alt="Sorting Hat Frame 6">
-    <img src="img/sortinghat_frame_7.jpeg" alt="Sorting Hat Frame 7">
-    <img src="img/sortinghat_frame_8.jpeg" alt="Sorting Hat Frame 8">
-</div>
+<img id="sortingHatImage" src="img/sortinghat_frame_1.jpeg" alt="Sorting Hat">
 
 <script>
     const sortButton = document.getElementById("sortButton");
-    const sortingHatFrames = document.querySelectorAll("#sortingHatFrames img");
-    let currentFrame = 0;
+    const sortingHatImage = document.getElementById("sortingHatImage");
 
     sortButton.addEventListener("click", function() {
-        // Hide all frames
-        sortingHatFrames.forEach(img => img.classList.remove("active"));
-
-        // Show the current frame
-        sortingHatFrames[currentFrame].classList.add("active");
-
-        // Play the "screaming" sound when the last frame is shown
-        if (currentFrame === sortingHatFrames.length - 1) {
-            const audio = new Audio('screaming-sorting-hat.mp3'); // Add the path to your scream sound file
-            audio.play();
-        }
-
-        // Move to the next frame
-        currentFrame = (currentFrame + 1) % sortingHatFrames.length;
+        // Change the image source to sortinghat2.kra
+        sortingHatImage.src = "img/sortinghat2.kra";
     });
 </script>
 

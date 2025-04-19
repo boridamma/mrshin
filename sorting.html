@@ -1,65 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sorting Hat Scream</title>
-  <style>
-    body {
-      background: #111;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .hat-container {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      overflow: hidden;
-    }
-    #sortingHat {
-      width: 100%;
-      transition: transform 0.1s ease;
-    }
-    .scream {
-      animation: screamAnimation 1s ease forwards;
-    }
-    @keyframes screamAnimation {
-      0%   { transform: scaleY(1) scaleX(1); }
-      20%  { transform: scaleY(1.3) scaleX(0.9); }
-      40%  { transform: scaleY(1.5) scaleX(0.8); }
-      60%  { transform: scaleY(1.7) scaleX(0.7); }
-      80%  { transform: scaleY(1.5) scaleX(0.8); }
-      100% { transform: scaleY(1) scaleX(1); }
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 18px;
-      background-color: gold;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Hat</title>
+    <style>
+        #sortingHatFrames img {
+            display: none;
+        }
+        #sortingHatFrames img.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
 
-<div class="hat-container">
-  <img id="sortingHat" src="sortinghat.jpeg" alt="Sorting Hat">
+<button id="sortButton">Click to Sort!</button>
+
+<div id="sortingHatFrames">
+    <img src="img/sortinghat_frame_1.jpeg" alt="Sorting Hat Frame 1">
+    <img src="img/sortinghat_frame_2.jpeg" alt="Sorting Hat Frame 2">
+    <img src="img/sortinghat_frame_3.jpeg" alt="Sorting Hat Frame 3">
+    <img src="img/sortinghat_frame_4.jpeg" alt="Sorting Hat Frame 4">
+    <img src="img/sortinghat_frame_5.jpeg" alt="Sorting Hat Frame 5">
+    <img src="img/sortinghat_frame_6.jpeg" alt="Sorting Hat Frame 6">
+    <img src="img/sortinghat_frame_7.jpeg" alt="Sorting Hat Frame 7">
+    <img src="img/sortinghat_frame_8.jpeg" alt="Sorting Hat Frame 8">
 </div>
 
-<button onclick="scream()">Scream!</button>
-
 <script>
-  function scream() {
-    const hat = document.getElementById("sortingHat");
-    hat.classList.remove("scream"); // reset if already screaming
-    void hat.offsetWidth; // force reflow
-    hat.classList.add("scream");
-  }
+    const sortButton = document.getElementById("sortButton");
+    const sortingHatFrames = document.querySelectorAll("#sortingHatFrames img");
+    let currentFrame = 0;
+
+    sortButton.addEventListener("click", function() {
+        // Hide all frames
+        sortingHatFrames.forEach(img => img.classList.remove("active"));
+
+        // Show the current frame
+        sortingHatFrames[currentFrame].classList.add("active");
+
+        // Play the "screaming" sound when the last frame is shown
+        if (currentFrame === sortingHatFrames.length - 1) {
+            const audio = new Audio('screaming-sorting-hat.mp3'); // Add the path to your scream sound file
+            audio.play();
+        }
+
+        // Move to the next frame
+        currentFrame = (currentFrame + 1) % sortingHatFrames.length;
+    });
 </script>
 
 </body>

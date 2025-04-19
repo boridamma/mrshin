@@ -1,6 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sorting Hat Scream</title>
+  <style>
+    body {
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .hat-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      overflow: hidden;
+    }
+    #sortingHat {
+      width: 100%;
+      transition: transform 0.1s ease;
+    }
+    .scream {
+      animation: screamAnimation 1s ease forwards;
+    }
+    @keyframes screamAnimation {
+      0%   { transform: scaleY(1) scaleX(1); }
+      20%  { transform: scaleY(1.3) scaleX(0.9); }
+      40%  { transform: scaleY(1.5) scaleX(0.8); }
+      60%  { transform: scaleY(1.7) scaleX(0.7); }
+      80%  { transform: scaleY(1.5) scaleX(0.8); }
+      100% { transform: scaleY(1) scaleX(1); }
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: gold;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+    }
+  </style>
+</head>
 <body>
-  <div class="jumbotron"></div>
-  <id=canvas></canvas>
-  <img src="sortinghat.jpeg"><>
-    <button>start</button>
+
+<div class="hat-container">
+  <img id="sortingHat" src="sortinghat.jpeg" alt="Sorting Hat">
+</div>
+
+<button onclick="scream()">Scream!</button>
+
+<script>
+  function scream() {
+    const hat = document.getElementById("sortingHat");
+    hat.classList.remove("scream"); // reset if already screaming
+    void hat.offsetWidth; // force reflow
+    hat.classList.add("scream");
+  }
+</script>
+
 </body>
+</html>

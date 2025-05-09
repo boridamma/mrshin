@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Chatbot with Voice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f1f1f1;
+    }
+    .chat-container {
+      max-width: 700px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .chat-log {
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+    }
+    .user-msg {
+      color: blue;
+    }
+    .bot-msg {
+      color: green;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 8px 12px;
+    }
+    input {
+      flex: 1;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <h2>AI Voice Chatbot</h2>
+    <div id="chatLog" class="chat-log"></div>
+    <div class="controls">
+      <input type="text" id="userInput" placeholder="Say something or type..." />
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="startListening()">🎤</button>
+    </div>
+  </div>
+
+  <script>
+    const OPENAI_API_KEY = 'YOUR_API_KEY_HERE'; // ← insert your OpenAI API key
+    const chatLog = document.getElementById("chatLog");
+    const userInput = document.getElementById("userInput");
+
+    async function sendMessage() {
+      const input = userInput.value.trim();
+      if (!input) return;
+
+      appendMessage("You", input, "user-msg");
+      userInput.value = "";
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: input }]
+        })
+      });
+
+      const data = await response.json();
+      const botReply = data.choices?.[0]?.message?.content?.trim();
+      if (botReply) {
+        appendMessage("AI", botReply, "bot-msg");
+        speak(botReply);
+      } else {
+        appendMessage("AI", "Sorry, something went wrong.", "bot-msg");
+      }
+    }
+
+    function appendMessage(sender, message, className) {
+      const div = document.createElement("div");
+      div.innerHTML = `<strong class="${className}">${sender}:</strong> ${message}`;
+      chatLog.appendChild(div);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // Voice recognition
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.start();
+      recognition.onresult = function (event) {
+        const transcript = event.results[0][0].transcript;
+        userInput.value = transcript;
+        sendMessage();
+      };
+      recognition.onerror = function (err) {
+        alert("Voice recognition error: " + err.error);
+      };
+    }
+
+    // Voice output
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      synth.speak(utterance);
+    }
+  </script>
+</body>
+</html>
